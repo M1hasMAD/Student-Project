@@ -1,0 +1,124 @@
+<div style="
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+">
+
+    <h1 style="
+        margin-top: 0;
+        text-align: center;
+    ">
+        {{title}}
+    </h1>
+
+
+
+    <div class="car-gallery"
+         style="text-align: center; margin: 25px 0;">
+
+        <div style="position: relative; max-width: 600px; margin: auto;">
+            <img id="mainCarImage"
+                 src="{{mainImageUrl}}"
+                 alt="{{title}}"
+                 style="width: 100%; height: 350px; object-fit: contain; border-radius: 12px; background: #f3f4f6;">
+
+            <button type="button"
+                    id="previousCarImage"
+                    style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%);">
+                ❮
+            </button>
+
+            <button type="button"
+                    id="nextCarImage"
+                    style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+                ❯
+            </button>
+        </div>
+
+        <div id="carImageCounter" style="margin-top: 10px;"></div>
+    </div>
+
+    <script>
+        (function () {
+            const images = [
+                "{{mainImageUrl}}"
+                {{#images}},
+                "{{url}}"
+                {{/images}}
+            ];
+
+            let currentIndex = 0;
+
+            const mainImage = document.getElementById("mainCarImage");
+            const counter = document.getElementById("carImageCounter");
+            const previous = document.getElementById("previousCarImage");
+            const next = document.getElementById("nextCarImage");
+
+            function renderImage() {
+                mainImage.src = images[currentIndex];
+                counter.textContent =
+                    (currentIndex + 1) + " / " + images.length;
+
+                previous.disabled = images.length <= 1;
+                next.disabled = images.length <= 1;
+            }
+
+            previous.addEventListener("click", function () {
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                renderImage();
+            });
+
+            next.addEventListener("click", function () {
+                currentIndex = (currentIndex + 1) % images.length;
+                renderImage();
+            });
+
+            renderImage();
+        })();
+    </script>
+
+
+    <div style="
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 15px;
+    ">
+        €{{price}}
+    </div>
+
+    <div style="margin-bottom: 10px;">
+        <strong>Brand:</strong>
+        {{brand}}
+    </div>
+
+    <div style="margin-bottom: 10px;">
+        <strong>Category:</strong>
+        {{category}}
+    </div>
+
+    <div style="
+        margin-top: 20px;
+        line-height: 1.6;
+        color: #4b5563;
+    ">
+        {{description}}
+    </div>
+
+
+    <div style="margin-top:20px">
+        <label for="detailQuantity">Quantity:</label>
+
+        <input id="detailQuantity"
+               type="number"
+               value="1"
+               min="1"
+               style="width:70px;padding:8px">
+
+        <button type="button"
+                onclick="addToCart({{id}}, document.getElementById('detailQuantity').value)">
+            Add to Cart
+        </button>
+    </div>
+
+</div>

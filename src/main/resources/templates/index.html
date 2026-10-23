@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Car Store</title>
+
+    <link rel="stylesheet" href="css/estilos.css">
+
+    <style>
+
+        body {
+            margin: 0;
+            background: #f4f6f8;
+            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .store-header {
+            background: #15232b;
+            color: white;
+            padding: 18px 30px;
+        }
+
+        .store-header-content {
+            max-width: 1100px;
+            margin: 0 auto;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .store-logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .admin-link {
+            color: #c8f169;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .admin-link:hover {
+            text-decoration: underline;
+        }
+
+        .store-navigation {
+            max-width: 1100px;
+            margin: 0 auto;
+
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+
+            gap: 10px;
+
+            padding: 18px 20px;
+        }
+
+        .store-navigation a {
+            padding: 9px 14px;
+
+            border-radius: 8px;
+
+            color: #374151;
+            background: white;
+
+            text-decoration: none;
+            font-size: 14px;
+
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+            transition: 0.2s;
+        }
+
+        .store-navigation a:hover {
+            background: #eef2ff;
+            transform: translateY(-1px);
+        }
+
+        .store-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .welcome {
+            margin-bottom: 25px;
+            padding: 30px;
+
+            background: white;
+            border-radius: 16px;
+
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .welcome h1 {
+            margin: 0 0 10px;
+            font-size: 30px;
+        }
+
+        .welcome p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+        .imagen-producto {
+            width: 100%;
+            height: 200px;
+
+            object-fit: cover;
+
+            border-radius: 10px;
+
+            transition: transform 0.25s;
+        }
+
+        .imagen-producto:hover {
+            transform: scale(1.03);
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<header class="store-header">
+
+    <div class="store-header-content">
+
+        <div class="store-logo">
+            🚗 Car Store
+        </div>
+
+        <a class="admin-link"
+           href="admin/startAdmin">
+            Administration
+        </a>
+
+    </div>
+
+</header>
+
+<nav class="store-navigation">
+
+    <a href="#"
+       id="cars">
+        Cars
+    </a>
+
+    <a href="#"
+       id="register">
+        Register
+    </a>
+
+    <a href="#"
+       id="login">
+        Sign In
+    </a>
+
+    <a href="#"
+       id="cart">
+        Cart
+    </a>
+
+    <a href="#"
+       id="orders">
+        My Orders
+    </a>
+
+    <a href="#"
+       id="my_data">
+        My Account
+    </a>
+
+    <a href="#"
+       id="logout">
+        Sign Out
+    </a>
+
+</nav>
+
+
+<main class="store-content">
+
+    <div class="welcome">
+
+        <h1>Welcome to Car Store</h1>
+
+        <p>
+            Find your next car from our collection.
+        </p>
+
+    </div>
+
+
+    <div id="contenedor"></div>
+
+</main>
+
+
+<script src="librerias_js/jquery.js"></script>
+<script src="librerias_js/mustache.js"></script>
+
+<script>
+
+    let templateHome;
+    let templateCars;
+    let templateCarDetails;
+    let templateCart;
+
+    $.get("plantillas_html/home.html")
+        .done(function (response) {
+            templateHome = response;
+        });
+
+
+    $.get("plantillas_html/car_list.html")
+        .done(function (response) {
+            templateCars = response;
+        });
+
+
+    $.get("plantillas_html/car_details.html")
+        .done(function (response) {
+            templateCarDetails = response;
+        });
+
+    $.get("plantillas_html/cart.html")
+        .done(function(response) {
+            templateCart = response;
+        });
+
+    function showHome() {
+
+        $("#contenedor").html(templateHome);
+
+    }
+
+    function showCars() {
+
+        $.getJSON("restCars/list")
+            .done(function (json) {
+
+                console.log(json);
+
+                const html =
+                    Mustache.render(templateCars, json);
+
+                $("#contenedor").html(html);
+
+            });
+
+    }
+
+    function showDetails(id) {
+
+        $.getJSON(
+            "restCars/get-car",
+            {
+                id: id
+            }
+        )
+        .done(function (json) {
+
+            console.log(json);
+
+            const html =
+                Mustache.render(templateCarDetails, json);
+
+            $("#contenedor").html(html);
+
+        });
+
+    }
+
+
+    /*
+     * Navigation
+     */
+
+    $("#cars").click(function (event) {
+
+        event.preventDefault();
+
+        showCars();
+
+    });
+
+
+    $("#register").click(function (event) {
+
+        event.preventDefault();
+
+        window.location.href = "/register";
+
+    });
+
+
+    $("#login").click(function (event) {
+
+        event.preventDefault();
+
+        alert("Login functionality is not available yet.");
+
+    });
+
+    $("#cart").click(function(event) {
+
+        event.preventDefault();
+
+        showCart();
+    });
+
+
+    $("#orders").click(function (event) {
+
+        event.preventDefault();
+
+        alert("Orders functionality is not available yet.");
+
+    });
+
+
+    $("#my_data").click(function (event) {
+
+        event.preventDefault();
+
+        alert("Account functionality is not available yet.");
+
+    });
+
+
+    $("#logout").click(function (event) {
+
+        event.preventDefault();
+
+        alert("Logout functionality is not available yet.");
+
+    });
+
+    showCars();
+
+
+function showCart() {
+    $.getJSON("/restCart/getProducts")
+        .done(function(cart) {
+            if (!templateCart) {
+                $("#contenedor").html(
+                    "<p>Loading shopping cart...</p>"
+                );
+                return;
+            }
+
+            $("#contenedor").html(
+                Mustache.render(templateCart, cart)
+            );
+        })
+        .fail(function() {
+            $("#contenedor").html(
+                "<p>Could not load the shopping cart.</p>"
+            );
+        });
+}
+
+function addToCart(id, quantity) {
+    const amount = Number(quantity);
+
+    if (!Number.isInteger(amount) || amount < 1) {
+        alert("Quantity must be at least 1.");
+        return;
+    }
+
+    $.get("/restCart/addProduct", {
+        id: id,
+        quantity: amount
+    }).done(function(response) {
+        alert(response);
+    }).fail(function() {
+        alert("Could not add the product to the cart.");
+    });
+}
+
+function updateCartQuantity(id) {
+    const input = document.getElementById("cartQuantity-" + id);
+    const quantity = Number(input.value);
+
+    if (!Number.isInteger(quantity) || quantity < 1) {
+        alert("Quantity must be at least 1.");
+        return;
+    }
+
+    $.get("/restCart/updateQuantity", {
+        id: id,
+        quantity: quantity
+    }).done(function() {
+        showCart();
+    }).fail(function() {
+        alert("Could not update the quantity.");
+    });
+}
+
+function removeFromCart(id) {
+    $.get("/restCart/removeProduct", {
+        id: id
+    }).done(function() {
+        showCart();
+    }).fail(function() {
+        alert("Could not remove the product.");
+    });
+}
+
+</script>
+
+</body>
+</html>

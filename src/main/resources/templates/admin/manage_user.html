@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+
+<div th:insert="fragments/general.html :: menu"></div>
+
+<main class="admin-container category-form-page">
+
+    <div class="page-header">
+        <div>
+            <span class="section-label">STORE MANAGEMENT</span>
+            <h1>Create User</h1>
+            <p>Add a new user to the system.</p>
+        </div>
+
+        <a th:href="@{/admin/manageUsers}"
+           class="button button-secondary">
+            ← Back to users
+        </a>
+    </div>
+
+    <section class="category-form-card">
+        <div class="category-form-heading">
+            <div class="category-form-icon">+</div>
+            <div>
+                <h2>User Information</h2>
+                <p>Complete all fields to create a user.</p>
+            </div>
+        </div>
+
+        <form th:action="@{/admin/saveUser}"
+              th:object="${newUser}"
+              method="post"
+              class="category-form">
+
+            <div class="category-form-field">
+                <label for="email">Email</label>
+                <input type="email" id="email"
+                       th:field="*{email}"
+                       placeholder="user@example.com" required>
+            </div>
+
+            <div class="category-form-field">
+                <label for="pass">Password</label>
+                <input type="password" id="pass"
+                       th:field="*{pass}"
+                       placeholder="Enter password" required>
+            </div>
+
+            <div class="category-form-field">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName"
+                       th:field="*{firstName}" required>
+            </div>
+
+            <div class="category-form-field">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName"
+                       th:field="*{lastName}" required>
+            </div>
+
+            <div class="category-form-field">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone"
+                       th:field="*{phone}"
+                       placeholder="+34 600 000 000" required>
+            </div>
+
+            <div class="category-form-actions">
+                <a th:href="@{/admin/manageUsers}"
+                   class="button button-secondary">Cancel</a>
+
+                <button type="submit"
+                        class="button category-primary-button">
+                    Save User →
+                </button>
+            </div>
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

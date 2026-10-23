@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+
+<div th:insert="fragments/general.html :: menu"></div>
+
+<main class="admin-container categories-page">
+
+    <div class="page-header categories-header">
+        <div>
+            <span class="section-label">STORE MANAGEMENT</span>
+            <h1>Manage Categories</h1>
+            <p>Organize your cars into categories and manage their information.</p>
+        </div>
+
+        <div class="category-header-actions">
+            <a th:href="@{/admin/registerCategory}"
+               class="button category-primary-button">
+                + Add Category
+            </a>
+
+            <a th:href="@{/admin/startAdmin}"
+               class="button button-secondary">
+                ← Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="category-summary">
+        <div class="category-summary-icon">▦</div>
+        <div>
+            <span class="category-summary-label">Total categories</span>
+            <strong th:text="${#lists.size(categories)}">0</strong>
+        </div>
+    </div>
+
+    <p th:if="${error}"
+       th:text="${error}"
+       class="error-message category-error"></p>
+
+    <section class="category-table-card">
+        <div class="category-table-heading">
+            <div>
+                <h2>All Categories</h2>
+                <p>Manage the categories available in your store.</p>
+            </div>
+        </div>
+
+        <div class="category-table-wrapper">
+            <table class="category-table">
+                <thead>
+                <tr>
+                    <th class="category-id-column">ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th class="category-actions-column">Actions</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="category : ${categories}">
+                    <td>
+                        <span class="category-id"
+                              th:text="${category.id}"></span>
+                    </td>
+
+                    <td>
+                        <span class="category-name"
+                              th:text="${category.name}"></span>
+                    </td>
+
+                    <td>
+                        <span class="category-description"
+                              th:text="${category.description}"></span>
+                    </td>
+
+                    <td>
+                        <div class="category-row-actions">
+                            <a th:href="@{/admin/editCategory(id=${category.id})}"
+                               class="button category-edit-button">
+                                Edit
+                            </a>
+
+                            <a th:href="@{/admin/deleteCategory(id=${category.id})}"
+                               class="button category-delete-button"
+                               onclick="return confirm('Are you sure you want to delete this category?')">
+                                Delete
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="category-empty-state"
+             th:if="${#lists.isEmpty(categories)}">
+            <h3>No categories yet</h3>
+            <p>Create your first category to organize the cars in your store.</p>
+            <a th:href="@{/admin/registerCategory}"
+               class="button category-primary-button">
+                + Create Category
+            </a>
+        </div>
+    </section>
+
+</main>
+
+</body>
+</html>

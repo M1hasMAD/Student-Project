@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+
+<body>
+
+<div th:insert="fragments/general.html :: menu"></div>
+
+<main class="admin-container">
+
+    <div class="welcome-card">
+
+        <h1>Welcome to the Admin Panel</h1>
+
+        <p>
+            Manage your cars and store information from this section.
+        </p>
+
+        <div class="dashboard-actions">
+
+            <a th:href="@{/admin/manageCars}"
+               class="dashboard-card">
+                <span class="dashboard-icon">🚗</span>
+                <strong>Manage Cars</strong>
+                <span>View, edit and delete cars</span>
+            </a>
+
+            <a th:href="@{/admin/registerCar}"
+               class="dashboard-card">
+                <span class="dashboard-icon">＋</span>
+                <strong>Add Car</strong>
+                <span>Register a new car</span>
+            </a>
+
+            <a th:href="@{/admin/manageUsers}"
+               class="dashboard-card">
+                <span class="dashboard-icon">👤</span>
+                <strong>Manage Users</strong>
+                <span>Manage store users</span>
+            </a>
+
+        </div>
+
+    </div>
+
+</main>
+
+</body>
+</html>

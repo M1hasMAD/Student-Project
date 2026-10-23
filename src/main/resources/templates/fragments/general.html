@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+</head>
+
+<body>
+
+<div th:fragment="menu" class="admin-menu">
+
+    <style>
+        .admin-menu {
+            --menu-ink: #f4f7f8;
+            --menu-muted: #aebbc2;
+            --menu-accent: #c8f169;
+
+            margin: 18px auto 28px;
+            max-width: 1100px;
+            padding: 14px 18px;
+
+            background: #15232b;
+            border: 1px solid #30444c;
+            border-radius: 10px;
+
+            box-shadow: 0 12px 28px rgb(18 35 43 / 14%);
+
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .admin-menu__top,
+        .admin-menu__links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-menu__top {
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #30444c;
+        }
+
+        .admin-menu__brand {
+            color: var(--menu-ink);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .admin-menu__public {
+            color: var(--menu-accent);
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .admin-menu__public::before {
+            content: "↗";
+            margin-right: 7px;
+        }
+
+        .admin-menu__links {
+            flex-wrap: wrap;
+            padding-top: 12px;
+        }
+
+        .admin-menu__links a {
+            padding: 9px 12px;
+
+            border: 1px solid transparent;
+            border-radius: 6px;
+
+            color: var(--menu-muted);
+            font-size: 14px;
+            text-decoration: none;
+
+            transition:
+                    color 160ms ease,
+                    background-color 160ms ease,
+                    border-color 160ms ease;
+        }
+
+        .admin-menu__links a:hover,
+        .admin-menu__links a:focus-visible {
+            border-color: #536b72;
+            background: #22363e;
+            color: var(--menu-ink);
+            outline: none;
+        }
+
+        .admin-menu__public:hover,
+        .admin-menu__public:focus-visible {
+            color: #e1ffa7;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        @media (max-width: 520px) {
+
+            .admin-menu {
+                margin: 12px 10px 22px;
+                padding: 12px;
+            }
+
+            .admin-menu__top {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .admin-menu__links a {
+                flex: 1 1 140px;
+                text-align: center;
+            }
+        }
+    </style>
+
+
+    <div class="admin-menu__top">
+
+        <span class="admin-menu__brand">
+            Administration Panel
+        </span>
+
+        <a class="admin-menu__public"
+           th:href="@{/}">
+            Back to Store
+        </a>
+
+    </div>
+
+
+    <nav class="admin-menu__links"
+         aria-label="Store management">
+
+        <a th:href="@{/admin/manageCars}">
+            Cars
+        </a>
+
+        <a th:href="@{/admin/registerCar}">
+            Add Car
+        </a>
+
+        <a th:href="@{/admin/manageUsers}">
+            Users
+        </a>
+
+        <a th:href="@{/admin/manageCategories}">
+            Categories
+        </a>
+
+        <a href="#">
+            Orders
+        </a>
+
+    </nav>
+
+</div>
+
+</body>
+</html>

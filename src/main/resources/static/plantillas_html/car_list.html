@@ -1,0 +1,41 @@
+{{#.}}
+
+<div class="car-card">
+    <img class="car-card-image"
+         src="get_thumbnail?id={{id}}"
+         alt="{{title}}">
+
+    <div class="car-card-content">
+        <h2 class="car-card-title">{{title}}</h2>
+
+        <p class="car-card-price">€{{price}}</p>
+
+        <div class="car-card-info">
+            <p><strong>Brand:</strong> {{brand}}</p>
+            <p><strong>Category:</strong> {{category}}</p>
+        </div>
+
+        <a href="#" onclick="showDetails({{id}}); return false;"
+           class="car-details-link">
+            View details
+        </a>
+
+        <div class="car-card-actions">
+            <div class="quantity-control">
+                <label for="listQuantity-{{id}}">Quantity</label>
+                <input id="listQuantity-{{id}}"
+                       type="number"
+                       value="1"
+                       min="1">
+            </div>
+
+            <button type="button"
+                    class="add-cart-button"
+                    onclick="addToCart({{id}}, document.getElementById('listQuantity-{{id}}').value)">
+                <span>＋</span> Add to Cart
+            </button>
+        </div>
+    </div>
+</div>
+
+{{/.}}

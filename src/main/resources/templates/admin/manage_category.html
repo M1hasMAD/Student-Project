@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Category</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+
+<div th:insert="fragments/general.html :: menu"></div>
+
+<main class="admin-container category-form-page">
+
+    <div class="page-header">
+        <div>
+            <span class="section-label">STORE MANAGEMENT</span>
+            <h1>Create Category</h1>
+            <p>Add a new category to organize your cars.</p>
+        </div>
+
+        <a th:href="@{/admin/manageCategories}"
+           class="button button-secondary">
+            ← Back to categories
+        </a>
+    </div>
+
+    <section class="category-form-card">
+        <div class="category-form-heading">
+            <div class="category-form-icon">+</div>
+            <div>
+                <h2>Category Information</h2>
+                <p>Enter the details for your new category.</p>
+            </div>
+        </div>
+
+        <form th:action="@{/admin/saveCategory}"
+              th:object="${newCategory}"
+              method="post"
+              class="category-form">
+
+            <div class="category-form-field">
+                <label for="name">Category Name</label>
+                <input type="text"
+                       id="name"
+                       th:field="*{name}"
+                       placeholder="e.g. Electric"
+                       required>
+                <small>Choose a short, descriptive name.</small>
+            </div>
+
+            <div class="category-form-field">
+                <label for="description">Description</label>
+                <textarea id="description"
+                          th:field="*{description}"
+                          rows="5"
+                          placeholder="Describe the cars in this category..."
+                          required></textarea>
+                <small>Explain what type of cars belong to this category.</small>
+            </div>
+
+            <div class="category-form-actions">
+                <a th:href="@{/admin/manageCategories}"
+                   class="button button-secondary">
+                    Cancel
+                </a>
+
+                <button type="submit" class="button category-primary-button">
+                    Save Category →
+                </button>
+            </div>
+        </form>
+    </section>
+
+</main>
+
+</body>
+</html>

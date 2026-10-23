@@ -1,0 +1,514 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | Car Store</title>
+
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #f4f6f8;
+            color: #1f2937;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .register-header {
+            padding: 20px 24px;
+            background: #15232b;
+            color: #ffffff;
+        }
+
+        .register-header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .register-logo {
+            font-size: 22px;
+            font-weight: 750;
+            letter-spacing: -0.5px;
+        }
+
+        .register-back {
+            color: #c8f169;
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .register-back:hover {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        .register-main {
+            display: flex;
+            justify-content: center;
+            padding: 48px 20px 60px;
+        }
+
+        .register-layout {
+            display: grid;
+            grid-template-columns: 0.85fr 1.15fr;
+            width: 100%;
+            max-width: 920px;
+            overflow: hidden;
+            border: 1px solid #e5eaf0;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow: 0 16px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .register-intro {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 38px 30px;
+            background: #15232b;
+            color: #ffffff;
+        }
+
+        .register-eyebrow {
+            display: inline-block;
+            margin-bottom: 18px;
+            color: #c8f169;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+        }
+
+        .register-intro h1 {
+            margin: 0 0 16px;
+            font-size: 34px;
+            line-height: 1.2;
+            letter-spacing: -1px;
+        }
+
+        .register-intro p {
+            margin: 0;
+            color: #bdc9ce;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .register-benefits {
+            display: grid;
+            gap: 18px;
+            margin-top: 38px;
+        }
+
+        .register-benefit {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: #e3e9ec;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .benefit-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #263c44;
+            color: #c8f169;
+            font-weight: 700;
+        }
+
+        .register-intro-footer {
+            margin-top: 45px;
+            padding-top: 18px;
+            border-top: 1px solid #30444c;
+            color: #aebbc2;
+            font-size: 12px;
+        }
+
+        .register-form-section {
+            padding: 38px 36px;
+        }
+
+        .register-form-heading {
+            margin-bottom: 28px;
+        }
+
+        .register-form-heading h2 {
+            margin: 0 0 8px;
+            color: #1e293b;
+            font-size: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .register-form-heading p {
+            margin: 0;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .register-form {
+            display: grid;
+            gap: 19px;
+        }
+
+        .register-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .register-field label {
+            color: #334155;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .register-field input {
+            width: 100%;
+            min-height: 46px;
+            padding: 12px 14px;
+            border: 1px solid #dbe2ea;
+            border-radius: 9px;
+            outline: none;
+            background: #ffffff;
+            color: #1e293b;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .register-field input::placeholder {
+            color: #a0aab8;
+        }
+
+        .register-field input:focus {
+            border-color: #647d8a;
+            box-shadow: 0 0 0 3px rgba(100, 125, 138, 0.14);
+        }
+
+        .register-field small {
+            color: #94a3b8;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .register-submit {
+            width: 100%;
+            min-height: 48px;
+            margin-top: 5px;
+            padding: 12px 18px;
+            border: 1px solid #15232b;
+            border-radius: 9px;
+            background: #15232b;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .register-submit:hover {
+            background: #263c44;
+            transform: translateY(-1px);
+        }
+
+        .register-submit:disabled {
+            opacity: 0.65;
+            cursor: wait;
+            transform: none;
+        }
+
+        .register-message {
+            display: none;
+            margin: 0;
+            padding: 12px 14px;
+            border-radius: 9px;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .register-message.success {
+            display: block;
+            border: 1px solid #bbf7d0;
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .register-message.error {
+            display: block;
+            border: 1px solid #fecaca;
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .register-footer {
+            margin-top: 22px;
+            text-align: center;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 720px) {
+            .register-main {
+                padding: 25px 14px 40px;
+            }
+
+            .register-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .register-intro {
+                padding: 28px 25px;
+            }
+
+            .register-intro h1 {
+                font-size: 29px;
+            }
+
+            .register-benefits {
+                margin-top: 25px;
+            }
+
+            .register-intro-footer {
+                margin-top: 28px;
+            }
+
+            .register-form-section {
+                padding: 30px 24px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .register-header {
+                padding: 17px;
+            }
+
+            .register-logo {
+                font-size: 19px;
+            }
+
+            .register-back {
+                font-size: 12px;
+            }
+
+            .register-form-section {
+                padding: 25px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="register-header">
+    <div class="register-header-content">
+        <div class="register-logo">🚗 Car Store</div>
+
+        <a th:href="@{/}" class="register-back">
+            ← Back to Store
+        </a>
+    </div>
+</header>
+
+<main class="register-main">
+
+    <div class="register-layout">
+
+        <section class="register-intro">
+            <div>
+                <span class="register-eyebrow">WELCOME TO CAR STORE</span>
+
+                <h1>Your next car starts here.</h1>
+
+                <p>
+                    Create your personal account and enjoy a more convenient
+                    way to explore our collection of cars.
+                </p>
+
+                <div class="register-benefits">
+                    <div class="register-benefit">
+                        <span class="benefit-icon">✓</span>
+                        <span>Discover our collection of cars.</span>
+                    </div>
+
+                    <div class="register-benefit">
+                        <span class="benefit-icon">✓</span>
+                        <span>Keep your personal information in one place.</span>
+                    </div>
+
+                    <div class="register-benefit">
+                        <span class="benefit-icon">✓</span>
+                        <span>Get ready for future account features.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="register-intro-footer">
+                Find your next car with Car Store.
+            </div>
+        </section>
+
+        <section class="register-form-section">
+
+            <div class="register-form-heading">
+                <h2>Create your account</h2>
+                <p>Fill in your details to get started.</p>
+            </div>
+
+            <form id="registerForm" class="register-form">
+
+                <div class="register-field">
+                    <label for="firstName">First Name</label>
+                    <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            placeholder="Enter your first name"
+                            autocomplete="given-name"
+                            required>
+                </div>
+
+                <div class="register-field">
+                    <label for="lastName">Last Name</label>
+                    <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            placeholder="Enter your last name"
+                            autocomplete="family-name"
+                            required>
+                </div>
+
+                <div class="register-field">
+                    <label for="email">Email Address</label>
+                    <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                            required>
+                </div>
+
+                <div class="register-field">
+                    <label for="pass">Password</label>
+                    <input
+                            type="password"
+                            id="pass"
+                            name="pass"
+                            placeholder="Create a password"
+                            autocomplete="new-password"
+                            minlength="6"
+                            required>
+                    <small>Use at least 6 characters.</small>
+                </div>
+
+                <div class="register-field">
+                    <label for="phone">Phone Number</label>
+                    <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="+34 600 000 000"
+                            autocomplete="tel"
+                            required>
+                </div>
+
+                <button type="submit" id="registerButton"
+                        class="register-submit">
+                    Create Account →
+                </button>
+
+                <p id="registerMessage"
+                   class="register-message"
+                   role="status"
+                   aria-live="polite"></p>
+            </form>
+
+            <div class="register-footer">
+                By creating an account, you provide your details
+                to register with Car Store.
+            </div>
+
+        </section>
+
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+
+<script>
+    $("#registerForm").on("submit", function (event) {
+        event.preventDefault();
+
+        const form = this;
+        const button = $("#registerButton");
+        const message = $("#registerMessage");
+
+        message.removeClass("success error").hide().text("");
+
+        button.prop("disabled", true).text("Creating account...");
+
+        $.ajax({
+            url: "/restUsuarios/registrarUsuario",
+            method: "POST",
+            data: $(form).serialize(),
+
+            success: function (response) {
+                const text = String(response);
+
+                if (text.startsWith("Registration successful")) {
+                    message
+                        .removeClass("error")
+                        .addClass("success")
+                        .text(text)
+                        .show();
+
+                    form.reset();
+                } else {
+                    message
+                        .removeClass("success")
+                        .addClass("error")
+                        .text(text)
+                        .show();
+                }
+            },
+
+            error: function () {
+                message
+                    .removeClass("success")
+                    .addClass("error")
+                    .text("Registration failed. Please try again.")
+                    .show();
+            },
+
+            complete: function () {
+                button.prop("disabled", false).text("Create Account →");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
