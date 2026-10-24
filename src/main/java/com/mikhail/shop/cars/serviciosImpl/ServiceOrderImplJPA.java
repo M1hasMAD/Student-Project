@@ -3,7 +3,6 @@ package com.mikhail.shop.cars.serviciosImpl;
 import com.mikhail.shop.cars.interfaces.CartService;
 import com.mikhail.shop.cars.interfaces.ServiceOrder;
 
-import com.ares.tienda.videojuegos.model.*;
 import com.mikhail.shop.cars.model.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -56,23 +55,39 @@ public class ServiceOrderImplJPA implements ServiceOrder {
             String fullName,
             String address,
             String province,
+            String phone,
+            String city,
+            String postalCode,
             long userId) {
 
         Order order = getCurrentOrder(userId);
+
         order.setFullName(fullName);
         order.setAddress(address);
         order.setProvince(province);
+        order.setPhone(phone);
+        order.setCity(city);
+        order.setPostalCode(postalCode);
+    }
+
+    @Override
+    public void processDeliveryMethod(String deliveryMethod, long userId) {
+        Order order = getCurrentOrder(userId);
+        order.setDeliveryMethod(deliveryMethod);
     }
 
     @Override
     public void processPaymentDetails(
             String cardHolder,
             String cardType,
-            long userId) {
-
+            String billingAddress,
+            long userId
+    ) {
         Order order = getCurrentOrder(userId);
+
         order.setCardHolder(cardHolder);
         order.setCardType(cardType);
+        order.setBillingAddress(billingAddress);
     }
 
     @Override
@@ -85,6 +100,11 @@ public class ServiceOrderImplJPA implements ServiceOrder {
         summary.setProvince(order.getProvince());
         summary.setCardHolder(order.getCardHolder());
         summary.setCardType(order.getCardType());
+        summary.setPhone(order.getPhone());
+        summary.setCity(order.getCity());
+        summary.setPostalCode(order.getPostalCode());
+        summary.setDeliveryMethod(order.getDeliveryMethod());
+        summary.setBillingAddress(order.getBillingAddress());
 
         List<Map<String, Object>> cars = new ArrayList<>();
 

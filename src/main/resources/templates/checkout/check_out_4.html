@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Order summary</title>
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+</head>
+<body>
+
+<header class="store-header">
+    <div class="store-header-content">
+        <a th:href="@{/}" class="store-logo">🚗 Car Store</a>
+        <a th:href="@{/}" class="admin-link">← Back to Store</a>
+    </div>
+</header>
+
+<main class="checkout-container checkout-container-wide">
+    <div class="checkout-heading">
+        <span class="checkout-eyebrow">ALMOST THERE</span>
+        <h1 class="checkout-title">Review your order</h1>
+        <p class="checkout-subtitle">
+            Check your details before confirming your order.
+        </p>
+    </div>
+
+    <div class="checkout-progress">
+        <span class="active"></span>
+        <span class="active"></span>
+        <span class="active"></span>
+        <span class="active"></span>
+    </div>
+
+    <section class="checkout-card">
+        <h2>Order summary</h2>
+        <p class="section-description">
+            Review your delivery, payment and vehicle details.
+        </p>
+
+        <div class="summary-grid">
+            <section class="summary-section">
+                <h3>📍 Shipping details</h3>
+                <dl class="summary-list">
+                    <dt>Full name</dt>
+                    <dd th:text="${orderSummary.fullName}"></dd>
+
+                    <dt>Street address</dt>
+                    <dd th:text="${orderSummary.address}"></dd>
+
+                    <dt>Province</dt>
+                    <dd th:text="${orderSummary.province}"></dd>
+
+                    <dt>Phone</dt>
+                    <dd th:text="${orderSummary.phone}"></dd>
+
+                    <dt>City</dt>
+                    <dd th:text="${orderSummary.city}"></dd>
+
+                    <dt>Postal code</dt>
+                    <dd th:text="${orderSummary.postalCode}"></dd>
+                </dl>
+            </section>
+
+            <section class="summary-section">
+                <h3>💳 Payment details</h3>
+                <dl class="summary-list">
+                    <dt>Cardholder</dt>
+                    <dd th:text="${orderSummary.cardHolder}"></dd>
+
+                    <dt>Card type</dt>
+                    <dd th:text="${orderSummary.cardType}"></dd>
+
+                    <dt>Billing address</dt>
+                    <dd th:text="${orderSummary.billingAddress}"></dd>
+                </dl>
+            </section>
+
+            <section class="summary-section summary-section-full">
+                <h3>🚚 Delivery method</h3>
+
+                <p th:if="${orderSummary.deliveryMethod == 'HOME_DELIVERY'}"
+                   class="delivery-badge">
+                    Home delivery
+                </p>
+
+                <p th:if="${orderSummary.deliveryMethod == 'STORE_PICKUP'}"
+                   class="delivery-badge">
+                    Store pickup
+                </p>
+            </section>
+        </div>
+
+        <section class="summary-section cars-summary">
+            <h3>🚗 Cars in your order</h3>
+
+            <div th:if="${#lists.isEmpty(orderSummary.cars)}"
+                 class="empty-cart-message">
+                Your cart is empty.
+            </div>
+
+            <div class="table-wrapper"
+                 th:unless="${#lists.isEmpty(orderSummary.cars)}">
+                <table class="order-table">
+                    <thead>
+                    <tr>
+                        <th>Car</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="car : ${orderSummary.cars}">
+                        <td th:text="${car.title}"></td>
+                        <td>
+                            €<span th:text="${car.price}"></span>
+                        </td>
+                        <td th:text="${car.quantity}"></td>
+                        <td>
+                            €<span th:text="${car.subtotal}"></span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="checkout-actions summary-actions">
+            <a th:href="@{/checkout/step1}" class="button-secondary">
+                ← Back to store
+            </a>
+
+            <form th:action="@{/checkout/confirm}" method="post">
+                <button type="submit" class="button-primary">
+                    Confirm order ✓
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="checkout-footer">
+        🚗 Car Store · Your order, your journey.
+    </footer>
+</main>
+
+</body>
+</html>

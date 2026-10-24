@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Store - Shipping details</title>
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+</head>
+<body>
+
+<header class="store-header">
+    <div class="store-header-content">
+        <a href="/" class="store-logo"
+           style="color:white;text-decoration:none">
+            🚗 Car Store
+        </a>
+
+        <a href="/" class="admin-link">
+            ← Back to Store
+        </a>
+    </div>
+</header>
+
+<main class="checkout-container">
+
+    <div style="text-align:center;margin-bottom:28px">
+        <p style="color:#64748b;font-weight:600;font-size:13px;
+                  letter-spacing:1px;text-transform:uppercase">
+            Secure checkout
+        </p>
+        <h1 class="checkout-title">Shipping details</h1>
+        <p class="checkout-subtitle">
+            Tell us where to deliver your new car.
+        </p>
+    </div>
+
+    <div class="checkout-progress">
+        <span class="active"></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <section class="checkout-card">
+
+        <h2>Delivery information</h2>
+        <p class="checkout-subtitle">
+            Please complete all fields below.
+        </p>
+
+        <form th:action="@{/checkout/shipping}" method="post">
+
+            <div class="checkout-field">
+                <label for="fullName">Full name</label>
+                <input type="text" id="fullName"
+                       name="fullName"
+                       placeholder="Enter your full name"
+                       autocomplete="name" required>
+            </div>
+
+            <div class="checkout-field">
+                <label for="address">Street address</label>
+                <input type="text" id="address"
+                       name="address"
+                       placeholder="Street, building and apartment"
+                       autocomplete="street-address" required>
+            </div>
+
+            <div class="checkout-field">
+                <label for="province">Province</label>
+                <input type="text" id="province"
+                       name="province"
+                       placeholder="e.g. Madrid" required>
+            </div>
+
+            <div class="checkout-field">
+                <label for="phone">Phone number</label>
+                <input type="tel" id="phone"
+                       name="phone"
+                       placeholder="+34 600 000 000"
+                       autocomplete="tel" required>
+            </div>
+
+            <div class="checkout-field">
+                <label for="city">City</label>
+                <input type="text" id="city"
+                       name="city"
+                       placeholder="Enter your city"
+                       autocomplete="address-level2" required>
+            </div>
+
+            <div class="checkout-field">
+                <label for="postalCode">Postal code</label>
+                <input type="text" id="postalCode"
+                       name="postalCode"
+                       placeholder="e.g. 28001"
+                       autocomplete="postal-code" required>
+            </div>
+
+            <div class="checkout-actions">
+                <a href="/" class="checkout-button secondary">
+                    ← Back to store
+                </a>
+                <button type="submit" class="checkout-button">
+                    Continue to payment →
+                </button>
+            </div>
+
+        </form>
+    </section>
+
+    <p style="text-align:center;color:#64748b;font-size:13px;
+              margin-top:20px">
+        🚗 Car Store · Your order, your journey.
+    </p>
+
+</main>
+
+</body>
+</html>

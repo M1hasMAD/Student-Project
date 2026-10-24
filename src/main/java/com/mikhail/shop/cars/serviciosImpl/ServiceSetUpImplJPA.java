@@ -1,7 +1,6 @@
 package com.mikhail.shop.cars.serviciosImpl;
 
 import com.mikhail.shop.cars.interfaces.ServiceSetUp;
-import com.ares.tienda.videojuegos.model.*;
 
 import com.mikhail.shop.cars.model.*;
 import jakarta.persistence.EntityManager;

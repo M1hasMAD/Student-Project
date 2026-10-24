@@ -30,10 +30,13 @@ public class Order {
     private String fullName;
     private String address;
     private String province;
-
-    // Test data only. Do not store real card numbers.
+    private String phone;
+    private String city;
+    private String postalCode;
     private String cardHolder;
     private String cardType;
+    private String billingAddress;
+    private String deliveryMethod;
 
     public Long getId() {
         return id;
@@ -105,5 +108,45 @@ public class Order {
 
     public void setCardType(String cardType) {
         this.cardType = cardType;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public String getDeliveryMethod() {
+        return deliveryMethod;
+    }
+
+    public void setDeliveryMethod(String deliveryMethod) {
+        this.deliveryMethod = deliveryMethod;
+    }
+
+    public String getBillingAddress() {
+        return billingAddress;
+    }
+
+    public void setBillingAddress(String billingAddress) {
+        this.billingAddress = billingAddress;
     }
 }
