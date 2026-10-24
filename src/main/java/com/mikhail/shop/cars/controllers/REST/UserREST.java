@@ -4,11 +4,13 @@ import com.mikhail.shop.cars.interfaces.ServiceUsers;
 import com.mikhail.shop.cars.model.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -43,10 +45,12 @@ public class UserREST {
         return "Registration successful. You can now sign in.";
     }
 
+
     @RequestMapping("identificarUsuario")
     public String loginUser(
             @RequestParam String email,
-            @RequestParam String pass) {
+            @RequestParam String pass,
+            HttpServletRequest request) {
 
         User user = serviceUsers.getUserByEmailYPass(email, pass);
 
@@ -54,6 +58,28 @@ public class UserREST {
             return "Incorrect email or password.";
         }
 
+        request.getSession().setAttribute("user_identified", user);
+
         return "Login successful. Welcome, " + user.getFirstName() + "!";
     }
+
+    @RequestMapping("currentUser")
+    public Map<String, Object> currentUser(HttpServletRequest request) {
+        User user = (User) request.getSession()
+                .getAttribute("user_identified");
+
+        if (user == null) {
+            return Map.of("authenticated", false);
+        }
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("authenticated", true);
+        result.put("firstName", user.getFirstName());
+        result.put("lastName", user.getLastName());
+        result.put("email", user.getEmail());
+        result.put("phone", user.getPhone());
+
+        return result;
+    }
+
 }

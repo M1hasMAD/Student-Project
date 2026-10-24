@@ -17,12 +17,18 @@ public interface ServiceOrder {
             String fullName,
             String address,
             String province,
+            String phone,
+            String city,
+            String postalCode,
             long userId
     );
+
+    void processDeliveryMethod(String deliveryMethod, long userId);
 
     void processPaymentDetails(
             String cardHolder,
             String cardType,
+            String billingAddress,
             long userId
     );
 

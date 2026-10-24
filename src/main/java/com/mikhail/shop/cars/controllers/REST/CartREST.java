@@ -1,7 +1,9 @@
 package com.mikhail.shop.cars.controllers.REST;
 
+import com.mikhail.shop.cars.interfaces.CartService;
 import com.mikhail.shop.cars.interfaces.ServiceCars;
 import com.mikhail.shop.cars.model.Car;
+import com.mikhail.shop.cars.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +20,21 @@ public class CartREST {
     @Autowired
     private ServiceCars serviceCars;
 
-    @RequestMapping("addProduct")
+    @Autowired
+    private CartService cartService;
+
+    @PostMapping("addProduct")
     public String addProduct(
             @RequestParam("id") long id,
             @RequestParam("quantity") int quantity,
             HttpServletRequest request) {
+
+        User user = (User) request.getSession()
+                .getAttribute("user_identified");
+
+        if (user == null) {
+            return "Please sign in before adding products to the cart.";
+        }
 
         if (quantity < 1) {
             return "Quantity must be at least 1";
@@ -34,59 +46,34 @@ public class CartREST {
             return "Car not found";
         }
 
-        Map<Long, Integer> cart =
-                (Map<Long, Integer>) request.getSession()
-                        .getAttribute("shopping_cart");
+        cartService.addProduct(user.getId(), id, quantity);
 
-        if (cart == null) {
-            cart = new LinkedHashMap<>();
-            request.getSession().setAttribute("shopping_cart", cart);
-        }
-
-        cart.merge(id, quantity, Integer::sum);
-
-        return "Product added: id=" + id
-                + ", quantity=" + quantity;
+        return "Product added successfully.";
     }
 
     @RequestMapping("getProducts")
-    public Map<String, Object> getProducts(
-            HttpServletRequest request) {
+    public Map<String, Object> getProducts(HttpServletRequest request) {
+        User user = (User) request.getSession()
+                .getAttribute("user_identified");
 
-        Map<Long, Integer> cart =
-                (Map<Long, Integer>) request.getSession()
-                        .getAttribute("shopping_cart");
-
-        if (cart == null) {
-            cart = new LinkedHashMap<>();
+        if (user == null) {
+            return Map.of(
+                    "products", List.of(),
+                    "total", 0,
+                    "totalQuantity", 0,
+                    "empty", true
+            );
         }
 
-        List<Map<String, Object>> products = new ArrayList<>();
+        List<Map<String, Object>> products =
+                cartService.getCartProducts(user.getId());
+
         double total = 0;
         int totalQuantity = 0;
 
-        for (Map.Entry<Long, Integer> entry : cart.entrySet()) {
-
-            Car car = serviceCars.getCarById(entry.getKey());
-
-            if (car != null) {
-                int quantity = entry.getValue();
-                double subtotal = car.getPrice() * quantity;
-
-                Map<String, Object> product = new LinkedHashMap<>();
-                product.put("id", car.getId());
-                product.put("title", car.getTitle());
-                product.put("price", car.getPrice());
-                product.put("quantity", quantity);
-                product.put("subtotal", subtotal);
-                product.put("imageUrl",
-                        "get_thumbnail?id=" + car.getId());
-
-                products.add(product);
-
-                total += subtotal;
-                totalQuantity += quantity;
-            }
+        for (Map<String, Object> product : products) {
+            total += ((Number) product.get("subtotal")).doubleValue();
+            totalQuantity += ((Number) product.get("quantity")).intValue();
         }
 
         Map<String, Object> response = new LinkedHashMap<>();
@@ -103,15 +90,15 @@ public class CartREST {
             @RequestParam("id") long id,
             HttpServletRequest request) {
 
-        Map<Long, Integer> cart =
-                (Map<Long, Integer>) request.getSession()
-                        .getAttribute("shopping_cart");
+        User user = (User) request.getSession()
+                .getAttribute("user_identified");
 
-        if (cart != null) {
-            cart.remove(id);
+        if (user == null) {
+            return "Please sign in first.";
         }
 
-        return "Product removed from cart";
+        cartService.removeProduct(user.getId(), id);
+        return "Product removed from cart.";
     }
 
     @RequestMapping("updateQuantity")
@@ -120,20 +107,18 @@ public class CartREST {
             @RequestParam("quantity") int quantity,
             HttpServletRequest request) {
 
-        if (quantity < 1) {
-            return "Quantity must be at least 1";
+        User user = (User) request.getSession()
+                .getAttribute("user_identified");
+
+        if (user == null) {
+            return "Please sign in first.";
         }
 
-        Map<Long, Integer> cart =
-                (Map<Long, Integer>) request.getSession()
-                        .getAttribute("shopping_cart");
-
-        if (cart == null || !cart.containsKey(id)) {
-            return "Product not found in cart";
+        try {
+            cartService.updateQuantity(user.getId(), id, quantity);
+            return "Product quantity updated.";
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
         }
-
-        cart.put(id, quantity);
-
-        return "Product quantity updated";
     }
 }

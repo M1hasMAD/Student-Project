@@ -119,4 +119,63 @@ public class CartServiceImplJPA implements CartService {
 
         return products;
     }
+
+    @Override
+    public void removeProduct(long userId, long carId) {
+        List<Cart> carts = entityManager.createQuery(
+                "SELECT c FROM Cart c WHERE c.user.id = :userId",
+                Cart.class
+        ).setParameter("userId", userId).getResultList();
+
+        if (carts.isEmpty()) {
+            return;
+        }
+
+        Cart cart = carts.get(0);
+
+        CartItem itemToRemove = null;
+
+        for (CartItem item : cart.getCartItems()) {
+            if (item.getCar().getId() == carId) {
+                itemToRemove = item;
+                break;
+            }
+        }
+
+        if (itemToRemove != null) {
+            cart.getCartItems().remove(itemToRemove);
+            entityManager.remove(itemToRemove);
+        }
+    }
+
+    @Override
+    public void updateQuantity(long userId, long carId, int quantity) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException(
+                    "Quantity must be greater than zero"
+            );
+        }
+
+        List<Cart> carts = entityManager.createQuery(
+                "SELECT c FROM Cart c WHERE c.user.id = :userId",
+                Cart.class
+        ).setParameter("userId", userId).getResultList();
+
+        if (carts.isEmpty()) {
+            throw new IllegalArgumentException("Cart not found");
+        }
+
+        Cart cart = carts.get(0);
+
+        for (CartItem item : cart.getCartItems()) {
+            if (item.getCar().getId() == carId) {
+                item.setQuantity(quantity);
+                return;
+            }
+        }
+
+        throw new IllegalArgumentException(
+                "Product not found in cart"
+        );
+    }
 }

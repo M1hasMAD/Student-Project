@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Delivery method</title>
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+</head>
+<body>
+
+<header class="store-header">
+    <div class="store-header-content">
+        <a th:href="@{/}" class="store-logo">🚗 Car Store</a>
+        <a th:href="@{/}" class="admin-link">← Back to Store</a>
+    </div>
+</header>
+
+<main class="checkout-container">
+    <div class="checkout-heading">
+        <span class="checkout-eyebrow">SECURE CHECKOUT</span>
+        <h1 class="checkout-title">Delivery options</h1>
+        <p class="checkout-subtitle">
+            Choose how you would like to receive your new car.
+        </p>
+    </div>
+
+    <div class="checkout-progress">
+        <span class="active"></span>
+        <span class="active"></span>
+        <span class="active"></span>
+        <span></span>
+    </div>
+
+    <section class="checkout-card">
+        <h2>How would you like to receive your car?</h2>
+        <p class="section-description">
+            Select the option that works best for you.
+        </p>
+
+        <form th:action="@{/checkout/delivery}" method="post"
+              class="checkout-form">
+
+            <div class="delivery-options">
+                <label class="delivery-option">
+                    <input type="radio" name="deliveryMethod"
+                           value="HOME_DELIVERY" required>
+                    <span class="delivery-option-content">
+                        <span class="delivery-icon">🚚</span>
+                        <span class="delivery-option-title">Home delivery</span>
+                        <span class="delivery-option-description">
+                            Have your car delivered to your address.
+                        </span>
+                    </span>
+                </label>
+
+                <label class="delivery-option">
+                    <input type="radio" name="deliveryMethod"
+                           value="STORE_PICKUP" required>
+                    <span class="delivery-option-content">
+                        <span class="delivery-icon">🏢</span>
+                        <span class="delivery-option-title">Store pickup</span>
+                        <span class="delivery-option-description">
+                            Pick up your car at our store.
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <div class="checkout-actions">
+                <a th:href="@{/checkout/step1}" class="button-secondary">
+                    ← Back to store
+                </a>
+                <button type="submit" class="button-primary">
+                    Review order →
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <footer class="checkout-footer">
+        🚗 Car Store · Your order, your journey.
+    </footer>
+</main>
+
+</body>
+</html>

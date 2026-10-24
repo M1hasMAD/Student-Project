@@ -8,4 +8,8 @@ public interface CartService {
     void addProduct(long userId, long carId, int quantity);
 
     List<Map<String, Object>> getCartProducts(long userId);
+
+    void removeProduct(long userId, long carId);
+
+    void updateQuantity(long userId, long carId, int quantity);
 }
