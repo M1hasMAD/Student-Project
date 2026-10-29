@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "tabla_categories")
 public class Category {
 
     private String name;
