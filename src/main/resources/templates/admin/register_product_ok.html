@@ -3,53 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <title>Car Registered Successfully</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
-
 <body>
 
-<div th:insert="fragments/general.html :: menu"></div>
+<div th:insert="fragments/general.html :: admin-header"></div>
 
-<main class="admin-container">
-
-    <div class="welcome-card">
-
-        <h1>Welcome to the Admin Panel</h1>
-
-        <p>
-            Manage your cars and store information from this section.
-        </p>
-
-        <div class="dashboard-actions">
-
-            <a th:href="@{/admin/manageCars}"
-               class="dashboard-card">
-                <span class="dashboard-icon">🚗</span>
-                <strong>Manage Cars</strong>
-                <span>View, edit and delete cars</span>
-            </a>
-
-            <a th:href="@{/admin/registerCar}"
-               class="dashboard-card">
-                <span class="dashboard-icon">＋</span>
-                <strong>Add Car</strong>
-                <span>Register a new car</span>
-            </a>
-
-            <a th:href="@{/admin/manageUsers}"
-               class="dashboard-card">
-                <span class="dashboard-icon">👤</span>
-                <strong>Manage Users</strong>
-                <span>Manage store users</span>
-            </a>
-
+<main class="container section">
+    <div class="card text-center" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-body" style="padding: 60px 40px;">
+            <div class="success-icon" style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(30, 122, 58, 0.1); color: var(--color-success); font-size: 40px;">✓</div>
+            <h1 style="margin: 0 0 12px; font-size: 28px;">Car Registered Successfully</h1>
+            <p class="text-muted" style="margin: 0 0 32px;">The new car has been added to your store.</p>
+            <div class="flex flex-center gap-md" style="flex-wrap: wrap;">
+                <a th:href="@{/admin/manageCars}" class="btn btn-primary">View All Cars</a>
+                <a th:href="@{/admin/registerCar}" class="btn btn-secondary">Add Another Car</a>
+                <a th:href="@{/admin/startAdmin}" class="btn btn-ghost">Back to Dashboard</a>
+            </div>
         </div>
-
     </div>
-
 </main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

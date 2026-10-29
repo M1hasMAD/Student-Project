@@ -1,56 +1,71 @@
-
 package com.mikhail.shop.cars.controllers.image;
 
+import com.mikhail.shop.cars.interfaces.ServiceCars;
 import com.mikhail.shop.cars.model.Car;
 import com.mikhail.shop.cars.model.CarImage;
-import com.mikhail.shop.cars.serviciosImpl.ServiceCarsImplJPA;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import java.util.Iterator;
+import java.util.Optional;
 
 @Controller
+@RequestMapping("/images")
 public class ControllerImage {
 
-    @Autowired
-    private ServiceCarsImplJPA serviceCars;
+    private static final Logger log = LoggerFactory.getLogger(ControllerImage.class);
 
-    @RequestMapping("get_image")
+    private final ServiceCars serviceCars;
+
+    public ControllerImage(ServiceCars serviceCars) {
+        this.serviceCars = serviceCars;
+    }
+
+    @GetMapping("/get_image")
     public void getImage(
             @RequestParam("id") Long id,
             HttpServletResponse response) throws IOException {
 
-        Car car = serviceCars.getCarById(id);
+        var carOptional = serviceCars.getCarById(id);
 
-        if (car == null || car.getCoverImage() == null) {
+        if (carOptional.isEmpty() || carOptional.get().getCoverImage() == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        byte[] image = car.getCoverImage();
+        byte[] image = carOptional.get().getCoverImage();
         response.setContentType(detectContentType(image));
         response.setContentLength(image.length);
         response.getOutputStream().write(image);
     }
 
-    @RequestMapping("get_thumbnail")
+    @GetMapping("/get_thumbnail")
     public void getThumbnail(
             @RequestParam("id") Long id,
             HttpServletResponse response) throws IOException {
 
-        Car car = serviceCars.getCarById(id);
+        Optional<Car> carOptional = serviceCars.getCarById(id);
 
-        if (car == null || car.getThumbnailImage() == null) {
-            // Для старых автомобилей без миниатюры используем оригинал.
-            if (car == null || car.getCoverImage() == null) {
+        if (carOptional.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        Car car = carOptional.get();
+
+        if (car.getThumbnailImage() == null) {
+            // For older cars without thumbnail, use original
+            if (car.getCoverImage() == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
@@ -68,18 +83,19 @@ public class ControllerImage {
         response.getOutputStream().write(thumbnail);
     }
 
-    @RequestMapping("get_car_image")
+    @GetMapping("/get_car_image")
     public void getCarImage(
             @RequestParam("imageId") Long imageId,
             HttpServletResponse response) throws IOException {
 
-        CarImage carImage = serviceCars.getImageById(imageId);
+        var carImageOptional = serviceCars.getImageById(imageId);
 
-        if (carImage == null || carImage.getImageData() == null) {
+        if (carImageOptional.isEmpty() || carImageOptional.get().getImageData() == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
+        CarImage carImage = carImageOptional.get();
         byte[] image = carImage.getImageData();
 
         response.setContentType(carImage.getContentType());

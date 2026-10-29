@@ -1,57 +1,64 @@
 package com.mikhail.shop.cars.serviciosImpl;
 
+import com.mikhail.shop.cars.exception.BusinessException;
+import com.mikhail.shop.cars.exception.EntityNotFoundException;
 import com.mikhail.shop.cars.interfaces.ServiceCategories;
 import com.mikhail.shop.cars.model.Category;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+import com.mikhail.shop.cars.repository.CategoryRepository;
+import org.slf4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class ServiceCategoriesImplJPA implements ServiceCategories {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private static final Logger log = LoggerFactory.getLogger(ServiceCategoriesImplJPA.class);
 
-    @Override
-    public List<Category> getCategories() {
-        return entityManager
-                .createQuery("select c from Category c", Category.class)
-                .getResultList();
+    private final CategoryRepository categoryRepository;
+
+    public ServiceCategoriesImplJPA(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public Category getCategoryById(long id) {
-        return entityManager.find(Category.class, id);
+    @Transactional(readOnly = true)
+    public List<Category> getCategories() {
+        return categoryRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Category> getCategoryById(long id) {
+        return categoryRepository.findById(id);
     }
 
     @Override
     public void registerCategory(Category category) {
-        entityManager.persist(category);
+        categoryRepository.save(category);
     }
 
     @Override
     public void saveChangesOfCategory(Category category) {
-        entityManager.merge(category);
+        if (!categoryRepository.existsById(category.getId())) {
+            throw new EntityNotFoundException("Category", category.getId());
+        }
+        categoryRepository.save(category);
     }
 
     @Override
-    public void deleteCategoryById(long id) throws Exception {
-        Category category = entityManager.find(Category.class, id);
-
-        if (category == null) {
-            throw new Exception("Category ID not found");
-        }
+    public void deleteCategoryById(long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category", id));
 
         if (!category.getCars().isEmpty()) {
-            throw new IllegalStateException(
-                    "Cannot delete a category that has cars assigned to it"
-            );
+            throw new BusinessException("Cannot delete a category that has cars assigned to it");
         }
 
-        entityManager.remove(category);
+        categoryRepository.delete(category);
     }
 }

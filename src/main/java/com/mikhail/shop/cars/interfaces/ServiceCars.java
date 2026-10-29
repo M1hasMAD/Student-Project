@@ -6,6 +6,7 @@ import com.mikhail.shop.cars.model.Category;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface ServiceCars {
 
@@ -13,11 +14,11 @@ public interface ServiceCars {
 
     List<Car> getCars();
 
-    Car getCarById(long id);
+    Optional<Car> getCarById(long id);
 
-    void deleteCarById(long id) throws Exception;
+    void deleteCarById(long id);
 
-    void saveChangesOfCar(Car carToEdit, Long categoryId) throws Exception;
+    void saveChangesOfCar(Car carToEdit, Long categoryId);
 
     List<Map<String, Object>> getJSONCars();
 
@@ -27,5 +28,5 @@ public interface ServiceCars {
 
     List<CarImage> getImagesByCarId(Long carId);
 
-    CarImage getImageById(Long imageId);
+    Optional<CarImage> getImageById(Long imageId);
 }

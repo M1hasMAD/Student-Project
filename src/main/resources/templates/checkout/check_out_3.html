@@ -3,84 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Delivery method</title>
-    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+    <title>Checkout - Delivery Method</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
 
-<header class="store-header">
-    <div class="store-header-content">
-        <a th:href="@{/}" class="store-logo">🚗 Car Store</a>
-        <a th:href="@{/}" class="admin-link">← Back to Store</a>
+<header class="site-header">
+    <div class="container flex flex-between">
+        <a href="/" class="site-logo" aria-label="Car Store Home">
+            <span class="logo-icon" aria-hidden="true">🚗</span>
+            <span class="logo-text">Car Store</span>
+        </a>
+        <a href="/" class="nav-link nav-link--ghost">← Back to Store</a>
     </div>
 </header>
 
-<main class="checkout-container">
-    <div class="checkout-heading">
-        <span class="checkout-eyebrow">SECURE CHECKOUT</span>
-        <h1 class="checkout-title">Delivery options</h1>
-        <p class="checkout-subtitle">
-            Choose how you would like to receive your new car.
-        </p>
-    </div>
-
-    <div class="checkout-progress">
+<main class="container section">
+    <div class="checkout-progress mb-lg">
         <span class="active"></span>
         <span class="active"></span>
         <span class="active"></span>
         <span></span>
     </div>
 
-    <section class="checkout-card">
-        <h2>How would you like to receive your car?</h2>
-        <p class="section-description">
-            Select the option that works best for you.
+    <div style="text-align:center;margin-bottom:28px">
+        <p class="text-muted" style="font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">
+            Secure Checkout
         </p>
+        <h1 class="section-title">Delivery Options</h1>
+        <p class="section-subtitle">Choose how you would like to receive your new car.</p>
+    </div>
 
-        <form th:action="@{/checkout/delivery}" method="post"
-              class="checkout-form">
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header">
+            <h2>How would you like to receive your car?</h2>
+            <p class="text-muted">Select the option that works best for you.</p>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/checkout/delivery}" method="post" class="form-field">
 
-            <div class="delivery-options">
-                <label class="delivery-option">
-                    <input type="radio" name="deliveryMethod"
-                           value="HOME_DELIVERY" required>
-                    <span class="delivery-option-content">
-                        <span class="delivery-icon">🚚</span>
-                        <span class="delivery-option-title">Home delivery</span>
-                        <span class="delivery-option-description">
-                            Have your car delivered to your address.
+                <div class="delivery-options" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 24px 0;">
+                    <label class="delivery-option" style="display: block; cursor: pointer;">
+                        <input type="radio" name="deliveryMethod" value="HOME_DELIVERY" required style="position: absolute; opacity: 0; pointer-events: none;">
+                        <span class="delivery-option-content" style="display: flex; flex-direction: column; gap: 10px; height: 100%; box-sizing: border-box; padding: 24px; border: 2px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);">
+                            <span class="delivery-icon" style="font-size: 30px;">🚚</span>
+                            <span class="delivery-option-title" style="font-size: 17px; font-weight: 700;">Home Delivery</span>
+                            <span class="delivery-option-description" style="color: var(--color-text-muted); font-size: 14px;">Have your car delivered to your address.</span>
                         </span>
-                    </span>
-                </label>
+                    </label>
 
-                <label class="delivery-option">
-                    <input type="radio" name="deliveryMethod"
-                           value="STORE_PICKUP" required>
-                    <span class="delivery-option-content">
-                        <span class="delivery-icon">🏢</span>
-                        <span class="delivery-option-title">Store pickup</span>
-                        <span class="delivery-option-description">
-                            Pick up your car at our store.
+                    <label class="delivery-option" style="display: block; cursor: pointer;">
+                        <input type="radio" name="deliveryMethod" value="STORE_PICKUP" required style="position: absolute; opacity: 0; pointer-events: none;">
+                        <span class="delivery-option-content" style="display: flex; flex-direction: column; gap: 10px; height: 100%; box-sizing: border-box; padding: 24px; border: 2px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);">
+                            <span class="delivery-icon" style="font-size: 30px;">🏢</span>
+                            <span class="delivery-option-title" style="font-size: 17px; font-weight: 700;">Store Pickup</span>
+                            <span class="delivery-option-description" style="color: var(--color-text-muted); font-size: 14px;">Pick up your car at our store.</span>
                         </span>
-                    </span>
-                </label>
-            </div>
+                    </label>
+                </div>
 
-            <div class="checkout-actions">
-                <a th:href="@{/checkout/step1}" class="button-secondary">
-                    ← Back to store
-                </a>
-                <button type="submit" class="button-primary">
-                    Review order →
-                </button>
-            </div>
-        </form>
-    </section>
+                <style>
+                    .delivery-option input:checked + .delivery-option-content {
+                        border-color: var(--color-primary);
+                        background: #f4f8f9;
+                        box-shadow: 0 0 0 3px rgba(18, 48, 90, 0.08);
+                    }
+                    .delivery-option:hover .delivery-option-content {
+                        border-color: #9aaab1;
+                    }
+                    .delivery-option input:focus-visible + .delivery-option-content {
+                        outline: 3px solid #9bb7c1;
+                        outline-offset: 3px;
+                    }
+                </style>
 
-    <footer class="checkout-footer">
+                <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
+                    <a th:href="@{/checkout/step1}" class="btn btn-secondary">← Back to Store</a>
+                    <button type="submit" class="btn btn-primary">Review Order →</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <p class="text-center text-muted" style="margin-top:24px; font-size:13px;">
         🚗 Car Store · Your order, your journey.
-    </footer>
+    </p>
+
 </main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

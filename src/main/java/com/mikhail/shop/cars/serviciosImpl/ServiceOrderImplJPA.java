@@ -1,96 +1,101 @@
 package com.mikhail.shop.cars.serviciosImpl;
 
+import com.mikhail.shop.cars.dto.DeliveryMethod;
+import com.mikhail.shop.cars.dto.PaymentDetails;
+import com.mikhail.shop.cars.dto.ShippingDetails;
+import com.mikhail.shop.cars.exception.OrderNotFoundException;
+import com.mikhail.shop.cars.exception.BusinessException;
 import com.mikhail.shop.cars.interfaces.CartService;
 import com.mikhail.shop.cars.interfaces.ServiceOrder;
-
 import com.mikhail.shop.cars.model.*;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.mikhail.shop.cars.repository.CartRepository;
+import com.mikhail.shop.cars.repository.OrderRepository;
+import com.mikhail.shop.cars.repository.OrderItemRepository;
+import com.mikhail.shop.cars.repository.UserRepository;
+import org.slf4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class ServiceOrderImplJPA implements ServiceOrder {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private static final Logger log = LoggerFactory.getLogger(ServiceOrderImplJPA.class);
 
-    @Autowired
-    private CartService cartService;
+    private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final CartService cartService;
+    private final UserRepository userRepository;
 
-    @Override
-    public List<Order> getOrders() {
-        return entityManager.createQuery(
-                        "SELECT o FROM Order o ORDER BY o.id DESC",
-                        Order.class
-                )
-                .getResultList();
+    public ServiceOrderImplJPA(OrderRepository orderRepository,
+                               CartRepository cartRepository,
+                               OrderItemRepository orderItemRepository,
+                               CartService cartService,
+                               UserRepository userRepository) {
+        this.orderRepository = orderRepository;
+        this.cartRepository = cartRepository;
+        this.orderItemRepository = orderItemRepository;
+        this.cartService = cartService;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Order getOrderById(long id) {
-        return entityManager.find(Order.class, id);
+    @Transactional(readOnly = true)
+    public List<Order> getOrders() {
+        return orderRepository.findAllByOrderByIdDesc();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Order> getOrderById(long id) {
+        return orderRepository.findById(id);
     }
 
     @Override
     public void updateOrderStatus(long id, String status) {
-        Order order = entityManager.find(Order.class, id);
-
-        if (order == null) {
-            throw new IllegalArgumentException("Order not found");
-        }
-
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException(id));
         order.setStatus(status);
+        orderRepository.save(order);
     }
 
     @Override
-    public void processShippingDetails(
-            String fullName,
-            String address,
-            String province,
-            String phone,
-            String city,
-            String postalCode,
-            long userId) {
-
+    public void processShippingDetails(ShippingDetails details, long userId) {
         Order order = getCurrentOrder(userId);
-
-        order.setFullName(fullName);
-        order.setAddress(address);
-        order.setProvince(province);
-        order.setPhone(phone);
-        order.setCity(city);
-        order.setPostalCode(postalCode);
+        order.setFullName(details.fullName());
+        order.setAddress(details.address());
+        order.setProvince(details.province());
+        order.setPhone(details.phone());
+        order.setCity(details.city());
+        order.setPostalCode(details.postalCode());
+        orderRepository.save(order);
     }
 
     @Override
-    public void processDeliveryMethod(String deliveryMethod, long userId) {
+    public void processDeliveryMethod(DeliveryMethod deliveryMethod, long userId) {
         Order order = getCurrentOrder(userId);
-        order.setDeliveryMethod(deliveryMethod);
+        order.setDeliveryMethod(deliveryMethod.method());
+        orderRepository.save(order);
     }
 
     @Override
-    public void processPaymentDetails(
-            String cardHolder,
-            String cardType,
-            String billingAddress,
-            long userId
-    ) {
+    public void processPaymentDetails(PaymentDetails paymentDetails, long userId) {
         Order order = getCurrentOrder(userId);
-
-        order.setCardHolder(cardHolder);
-        order.setCardType(cardType);
-        order.setBillingAddress(billingAddress);
+        order.setCardHolder(paymentDetails.cardHolder());
+        order.setCardType(paymentDetails.cardType());
+        order.setBillingAddress(paymentDetails.billingAddress());
+        orderRepository.save(order);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrderSummary getOrderSummary(long userId) {
         Order order = getCurrentOrder(userId);
 
@@ -106,12 +111,7 @@ public class ServiceOrderImplJPA implements ServiceOrder {
         summary.setDeliveryMethod(order.getDeliveryMethod());
         summary.setBillingAddress(order.getBillingAddress());
 
-        List<Map<String, Object>> cars = new ArrayList<>();
-
-        for (Map<String, Object> product :
-                cartService.getCartProducts(userId)) {
-            cars.add(product);
-        }
+        List<Map<String, Object>> cars = new ArrayList<>(cartService.getCartProducts(userId));
 
         summary.setCars(cars);
         return summary;
@@ -121,18 +121,12 @@ public class ServiceOrderImplJPA implements ServiceOrder {
     public void confirmOrder(long userId) {
         Order order = getCurrentOrder(userId);
 
-        List<Cart> carts = entityManager.createQuery(
-                        "SELECT c FROM Cart c WHERE c.user.id = :userId",
-                        Cart.class
-                )
-                .setParameter("userId", userId)
-                .getResultList();
-
-        if (carts.isEmpty() || carts.get(0).getCartItems().isEmpty()) {
-            throw new IllegalStateException("The cart is empty");
+        var cartOptional = cartRepository.findByUserId(userId);
+        if (cartOptional.isEmpty() || cartOptional.get().getCartItems().isEmpty()) {
+            throw new BusinessException("The cart is empty");
         }
 
-        Cart cart = carts.get(0);
+        Cart cart = cartOptional.get();
 
         for (CartItem cartItem :
                 new ArrayList<>(cart.getCartItems())) {
@@ -143,44 +137,31 @@ public class ServiceOrderImplJPA implements ServiceOrder {
             orderItem.setQuantity(cartItem.getQuantity());
 
             order.getOrderItems().add(orderItem);
-            entityManager.persist(orderItem);
+            orderItemRepository.save(orderItem);
         }
 
         // Remove cart items after copying them to the order.
         cart.getCartItems().clear();
+        cartRepository.save(cart);
 
         order.setStatus("COMPLETED");
+        orderRepository.save(order);
     }
 
     private Order getCurrentOrder(long userId) {
-
-        List<Order> orders = entityManager.createQuery(
-                        "SELECT o FROM Order o " +
-                                "WHERE o.user.id = :userId " +
-                                "AND o.status = :status",
-                        Order.class
-                )
-                .setParameter("userId", userId)
-                .setParameter("status", "IN_PROGRESS")
-                .setMaxResults(1)
-                .getResultList();
-
-        if (!orders.isEmpty()) {
-            return orders.get(0);
+        Optional<Order> existingOrder = orderRepository.findFirstByUserIdAndStatus(userId, "IN_PROGRESS");
+        if (existingOrder.isPresent()) {
+            return existingOrder.get();
         }
 
-        User user = entityManager.find(User.class, userId);
-
-        if (user == null) {
-            throw new IllegalArgumentException("User not found");
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("User not found"));
 
         Order order = new Order();
         order.setUser(user);
         order.setStatus("IN_PROGRESS");
 
-        entityManager.persist(order);
-
+        orderRepository.save(order);
         return order;
     }
 }

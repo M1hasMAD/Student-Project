@@ -2,69 +2,68 @@ package com.mikhail.shop.cars.controllers.REST;
 
 import com.mikhail.shop.cars.interfaces.ServiceUsers;
 import com.mikhail.shop.cars.model.User;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("restUsuarios/")
+@RequestMapping("/api/users")
 public class UserREST {
 
-    @Autowired
-    private ServiceUsers serviceUsers;
+    private static final Logger log = LoggerFactory.getLogger(UserREST.class);
 
-    @RequestMapping("registrarUsuario")
-    public String registerUser(@RequestParam Map<String, Object> formData) {
+    private final ServiceUsers serviceUsers;
 
-        Gson gson = new Gson();
-        JsonElement json = gson.toJsonTree(formData);
-        User user = gson.fromJson(json, User.class);
+    public UserREST(ServiceUsers serviceUsers) {
+        this.serviceUsers = serviceUsers;
+    }
 
-        if (user.getEmail() == null || user.getEmail().isBlank()
-                || user.getPass() == null || user.getPass().isBlank()
-                || user.getFirstName() == null || user.getFirstName().isBlank()
-                || user.getLastName() == null || user.getLastName().isBlank()
-                || user.getPhone() == null || user.getPhone().isBlank()) {
+    @PostMapping("/register")
+    public String registerUser(@RequestBody RegisterRequest request) {
+        if (request.email() == null || request.email().isBlank()
+                || request.password() == null || request.password().isBlank()
+                || request.firstName() == null || request.firstName().isBlank()
+                || request.lastName() == null || request.lastName().isBlank()
+                || request.phone() == null || request.phone().isBlank()) {
             return "All fields are required.";
         }
 
-        if (serviceUsers.getUserByEmail(user.getEmail()) != null) {
+        if (serviceUsers.getUserByEmail(request.email()).isPresent()) {
             return "This email is already registered.";
         }
 
+        User user = new User(request.email(), request.password(), request.firstName(), request.lastName(), request.phone());
         user.setId(0);
         serviceUsers.registerUser(user);
 
         return "Registration successful. You can now sign in.";
     }
 
-
-    @RequestMapping("identificarUsuario")
+    @PostMapping("/login")
     public String loginUser(
             @RequestParam String email,
             @RequestParam String pass,
-            HttpServletRequest request) {
+            jakarta.servlet.http.HttpServletRequest request) {
 
-        User user = serviceUsers.getUserByEmailYPass(email, pass);
+        Optional<User> userOptional = serviceUsers.getUserByEmailYPass(email, pass);
 
-        if (user == null) {
+        if (userOptional.isEmpty()) {
             return "Incorrect email or password.";
         }
 
-        request.getSession().setAttribute("user_identified", user);
+        request.getSession().setAttribute("user_identified", userOptional.get());
 
-        return "Login successful. Welcome, " + user.getFirstName() + "!";
+        return "Login successful. Welcome, " + userOptional.get().getFirstName() + "!";
     }
 
-    @RequestMapping("currentUser")
-    public Map<String, Object> currentUser(HttpServletRequest request) {
+    @GetMapping("/current")
+    public Map<String, Object> currentUser(jakarta.servlet.http.HttpServletRequest request) {
         User user = (User) request.getSession()
                 .getAttribute("user_identified");
 
@@ -82,4 +81,11 @@ public class UserREST {
         return result;
     }
 
+    public record RegisterRequest(
+            @Email @NotBlank String email,
+            @NotBlank String password,
+            @NotBlank String firstName,
+            @NotBlank String lastName,
+            @NotBlank String phone
+    ) {}
 }

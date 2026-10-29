@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="UTF-8">
@@ -7,219 +7,69 @@
 
     <title>Car Store</title>
 
-    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 
-    <style>
-
-        body {
-            margin: 0;
-            background: #f4f6f8;
-            color: #1f2937;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .store-header {
-            background: #15232b;
-            color: white;
-            padding: 18px 30px;
-        }
-
-        .store-header-content {
-            max-width: 1100px;
-            margin: 0 auto;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .store-logo {
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .admin-link {
-            color: #c8f169;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .admin-link:hover {
-            text-decoration: underline;
-        }
-
-        .store-navigation {
-            max-width: 1100px;
-            margin: 0 auto;
-
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-
-            gap: 10px;
-
-            padding: 18px 20px;
-        }
-
-        .store-navigation a {
-            padding: 9px 14px;
-
-            border-radius: 8px;
-
-            color: #374151;
-            background: white;
-
-            text-decoration: none;
-            font-size: 14px;
-
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-
-            transition: 0.2s;
-        }
-
-        .store-navigation a:hover {
-            background: #eef2ff;
-            transform: translateY(-1px);
-        }
-
-        .store-content {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .welcome {
-            margin-bottom: 25px;
-            padding: 30px;
-
-            background: white;
-            border-radius: 16px;
-
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
-        }
-
-        .welcome h1 {
-            margin: 0 0 10px;
-            font-size: 30px;
-        }
-
-        .welcome p {
-            margin: 0;
-            color: #6b7280;
-        }
-
-        .imagen-producto {
-            width: 100%;
-            height: 200px;
-
-            object-fit: cover;
-
-            border-radius: 10px;
-
-            transition: transform 0.25s;
-        }
-
-        .imagen-producto:hover {
-            transform: scale(1.03);
-        }
-
-    </style>
+    <script th:src="@{/librerias_js/jquery.js}"></script>
+    <script th:src="@{/librerias_js/mustache.js}"></script>
 </head>
 
 
 <body>
 
-
-<header class="store-header">
-
-    <div class="store-header-content">
-
-        <div class="store-logo">
-            🚗 Car Store
-        </div>
-
-        <a class="admin-link"
-           href="admin/startAdmin">
-            Administration
+<header class="site-header">
+    <div class="container flex flex-between">
+        <a href="/" class="site-logo" aria-label="Car Store Home">
+            <span class="logo-icon" aria-hidden="true">🚗</span>
+            <span class="logo-text">Car Store</span>
         </a>
 
+        <nav class="site-nav" aria-label="Main navigation">
+            <a href="#" id="cars" class="nav-link">Vehicles</a>
+            <a href="#" id="register" class="nav-link">Register</a>
+            <a href="#" id="login" class="nav-link">Sign In</a>
+            <a href="#" id="cart" class="nav-link nav-link--cart" aria-label="Shopping cart">
+                <span aria-hidden="true">🛒</span>
+                <span class="cart-count visually-hidden" id="cartCount">0</span>
+            </a>
+            <a href="#" id="orders" class="nav-link">My Orders</a>
+            <a href="#" id="my_data" class="nav-link">My Account</a>
+            <a href="#" id="logout" class="nav-link">Sign Out</a>
+            <a href="/admin/startAdmin" class="nav-link nav-link--admin">Administration</a>
+        </nav>
     </div>
-
 </header>
 
-<nav class="store-navigation">
+<main class="container section" id="main-content">
 
-    <a href="#"
-       id="cars">
-        Cars
-    </a>
+    <section class="hero-section" aria-labelledby="hero-title">
+        <div class="hero-content">
+            <h1 id="hero-title" class="section-title">Find Your Next Car</h1>
+            <p class="section-subtitle">Browse our collection of quality vehicles. Filter by category, brand, or price range.</p>
+        </div>
+    </section>
 
-    <a href="#"
-       id="register">
-        Register
-    </a>
-
-    <a href="#"
-       id="login">
-        Sign In
-    </a>
-
-    <a href="#"
-       id="cart">
-        Cart
-    </a>
-
-    <a href="#"
-       id="orders">
-        My Orders
-    </a>
-
-    <a href="#"
-       id="my_data">
-        My Account
-    </a>
-
-    <a href="#"
-       id="logout">
-        Sign Out
-    </a>
-
-</nav>
-
-
-<main class="store-content">
-
-    <div class="welcome">
-
-        <h1>Welcome to Car Store</h1>
-
-        <p>
-            Find your next car from our collection.
-        </p>
-
-    </div>
-
-
-    <div id="contenedor"></div>
+    <div id="contenedor" class="content-area"></div>
 
 </main>
 
-
-<script src="librerias_js/jquery.js"></script>
-<script src="librerias_js/mustache.js"></script>
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
 
 <script>
-
+    // Template storage
     let templateHome;
     let templateCars;
     let templateCarDetails;
     let templateCart;
 
+    // Load Mustache templates
     $.get("plantillas_html/home.html")
         .done(function (response) {
             templateHome = response;
         });
-
 
     $.get("plantillas_html/car_list.html")
         .done(function (response) {
@@ -238,29 +88,20 @@
         });
 
     function showHome() {
-
         $("#contenedor").html(templateHome);
-
     }
 
     function showCars() {
-
         $.getJSON("restCars/list")
             .done(function (json) {
-
                 console.log(json);
-
-                const html =
-                    Mustache.render(templateCars, json);
-
+                const html = Mustache.render(templateCars, json);
                 $("#contenedor").html(html);
-
             });
-
     }
 
-    function showDetails(id) {
 
+    function showDetails(id) {
         $.getJSON(
             "restCars/get-car",
             {
@@ -268,16 +109,10 @@
             }
         )
         .done(function (json) {
-
             console.log(json);
-
-            const html =
-                Mustache.render(templateCarDetails, json);
-
+            const html = Mustache.render(templateCarDetails, json);
             $("#contenedor").html(html);
-
         });
-
     }
 
 
@@ -286,54 +121,39 @@
      */
 
     $("#cars").click(function (event) {
-
         event.preventDefault();
-
         showCars();
-
     });
 
 
     $("#register").click(function (event) {
-
         event.preventDefault();
-
         window.location.href = "/register";
-
     });
 
     $("#login").click(function (event) {
-
         event.preventDefault();
-
         showLogin();
     });
 
     $("#cart").click(function(event) {
-
         event.preventDefault();
-
         showCart();
     });
 
 
     $("#orders").click(function (event) {
-
         event.preventDefault();
-
         alert("Orders functionality is not available yet.");
-
     });
 
 
     $("#logout").click(function (event) {
-
         event.preventDefault();
-
         alert("Logout functionality is not available yet.");
-
     });
 
+    // Load cars on initial page load
     showCars();
 
 
@@ -375,6 +195,7 @@ function addToCart(id, quantity) {
         }
     }).done(function(response) {
         alert(response);
+        updateCartCount();
     }).fail(function(xhr) {
         console.error("Add to cart failed:", xhr.status, xhr.responseText);
         alert("Could not add the product to the cart. HTTP " + xhr.status);
@@ -413,31 +234,38 @@ function removeFromCart(id) {
 
 function showLogin() {
     const html = `
-        <section class="welcome">
-            <h2>Sign In</h2>
+        <section class="card" style="max-width: 420px; margin: 0 auto;">
+            <div class="card-header text-center">
+                <h2>Sign In</h2>
+            </div>
+            <div class="card-body">
+                <form id="loginForm">
+                    <div class="form-field">
+                        <label for="loginEmail">Email:</label>
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            name="email"
+                            required
+                            autocomplete="email"
+                        >
+                    </div>
 
-            <form id="loginForm">
-                <label for="loginEmail">Email:</label>
-                <input
-                    type="email"
-                    id="loginEmail"
-                    name="email"
-                    required
-                >
-                <br><br>
+                    <div class="form-field">
+                        <label for="loginPass">Password:</label>
+                        <input
+                            type="password"
+                            id="loginPass"
+                            name="pass"
+                            required
+                            autocomplete="current-password"
+                        >
+                    </div>
 
-                <label for="loginPass">Password:</label>
-                <input
-                    type="password"
-                    id="loginPass"
-                    name="pass"
-                    required
-                >
-                <br><br>
-
-                <button type="submit">Sign In</button>
-                <p id="loginMessage"></p>
-            </form>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Sign In</button>
+                    <p id="loginMessage" class="text-center text-muted" style="margin-top: 12px; font-size: 13px;"></p>
+                </form>
+            </div>
         </section>
     `;
 
@@ -456,13 +284,13 @@ $(document).on("submit", "#loginForm", function (event) {
         }
     }).done(function (response) {
         if (response.startsWith("Login successful.")) {
-            $("#loginMessage").text(response);
+            $("#loginMessage").text(response).removeClass("text-muted").addClass("text-success");
             showCars();
         } else {
-            $("#loginMessage").text(response);
+            $("#loginMessage").text(response).removeClass("text-muted").addClass("text-error");
         }
     }).fail(function () {
-        $("#loginMessage").text("Could not sign in.");
+        $("#loginMessage").text("Could not sign in.").removeClass("text-muted").addClass("text-error");
     });
 });
 
@@ -477,11 +305,22 @@ $(document).on("submit", "#loginForm", function (event) {
             }
 
             const html = `
-                <section class="welcome">
-                    <h2>My Account</h2>
-                    <p><strong>Name:</strong> ${user.firstName} ${user.lastName}</p>
-                    <p><strong>Email:</strong> ${user.email}</p>
-                    <p><strong>Phone:</strong> ${user.phone}</p>
+                <section class="card" style="max-width: 500px; margin: 0 auto;">
+                    <div class="card-header">
+                        <h2>My Account</h2>
+                    </div>
+                    <div class="card-body">
+                        <dl class="summary-list">
+                            <dt>Name</dt>
+                            <dd>${user.firstName} ${user.lastName}</dd>
+
+                            <dt>Email</dt>
+                            <dd>${user.email}</dd>
+
+                            <dt>Phone</dt>
+                            <dd>${user.phone}</dd>
+                        </dl>
+                    </div>
                 </section>
             `;
 
@@ -498,6 +337,18 @@ function showCheckout() {
     window.location.href = "/checkout/step1";
 }
 
+function updateCartCount() {
+    $.getJSON("/restCart/getProducts")
+        .done(function(cart) {
+            const count = cart.totalQuantity || 0;
+            $('#cartCount').text(count).removeClass('visually-hidden');
+        });
+}
+
+// Update cart count on page load
+$(document).ready(function() {
+    updateCartCount();
+});
 
 </script>
 

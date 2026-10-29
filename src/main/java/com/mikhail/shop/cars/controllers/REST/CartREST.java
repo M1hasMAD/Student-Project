@@ -5,25 +5,31 @@ import com.mikhail.shop.cars.interfaces.ServiceCars;
 import com.mikhail.shop.cars.model.Car;
 import com.mikhail.shop.cars.model.User;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("restCart/")
+@RequestMapping("/api/cart")
 public class CartREST {
 
-    @Autowired
-    private ServiceCars serviceCars;
+    private static final Logger log = LoggerFactory.getLogger(CartREST.class);
 
-    @Autowired
-    private CartService cartService;
+    private final ServiceCars serviceCars;
+    private final CartService cartService;
 
-    @PostMapping("addProduct")
+    public CartREST(ServiceCars serviceCars, CartService cartService) {
+        this.serviceCars = serviceCars;
+        this.cartService = cartService;
+    }
+
+    @PostMapping("/addProduct")
     public String addProduct(
             @RequestParam("id") long id,
             @RequestParam("quantity") int quantity,
@@ -40,9 +46,9 @@ public class CartREST {
             return "Quantity must be at least 1";
         }
 
-        Car car = serviceCars.getCarById(id);
+        Optional<Car> carOptional = serviceCars.getCarById(id);
 
-        if (car == null) {
+        if (carOptional.isEmpty()) {
             return "Car not found";
         }
 
@@ -51,7 +57,7 @@ public class CartREST {
         return "Product added successfully.";
     }
 
-    @RequestMapping("getProducts")
+    @GetMapping("/getProducts")
     public Map<String, Object> getProducts(HttpServletRequest request) {
         User user = (User) request.getSession()
                 .getAttribute("user_identified");
@@ -85,7 +91,7 @@ public class CartREST {
         return response;
     }
 
-    @RequestMapping("removeProduct")
+    @PostMapping("/removeProduct")
     public String removeProduct(
             @RequestParam("id") long id,
             HttpServletRequest request) {
@@ -101,7 +107,7 @@ public class CartREST {
         return "Product removed from cart.";
     }
 
-    @RequestMapping("updateQuantity")
+    @PostMapping("/updateQuantity")
     public String updateQuantity(
             @RequestParam("id") long id,
             @RequestParam("quantity") int quantity,

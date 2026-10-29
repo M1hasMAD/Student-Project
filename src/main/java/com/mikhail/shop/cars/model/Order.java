@@ -149,4 +149,11 @@ public class Order {
     public void setBillingAddress(String billingAddress) {
         this.billingAddress = billingAddress;
     }
+
+    @Transient
+    public double getTotalAmount() {
+        return orderItems.stream()
+                .mapToDouble(item -> item.getCar().getPrice() * item.getQuantity())
+                .sum();
+    }
 }

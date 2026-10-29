@@ -1,82 +1,87 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Payment details</title>
-    <link rel="stylesheet" th:href="@{/css/checkout.css}">
+    <title>Checkout - Payment Details</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
 
-<header class="store-header">
-    <div class="store-header-content">
-        <a th:href="@{/}" class="store-logo">🚗 Car Store</a>
-        <a th:href="@{/}" class="admin-link">← Back to Store</a>
+<header class="site-header">
+    <div class="container flex flex-between">
+        <a href="/" class="site-logo" aria-label="Car Store Home">
+            <span class="logo-icon" aria-hidden="true">🚗</span>
+            <span class="logo-text">Car Store</span>
+        </a>
+        <a href="/" class="nav-link nav-link--ghost">← Back to Store</a>
     </div>
 </header>
 
-<main class="checkout-container">
-    <div class="checkout-heading">
-        <span class="checkout-eyebrow">SECURE CHECKOUT</span>
-        <h1 class="checkout-title">Payment details</h1>
-        <p class="checkout-subtitle">
-            Choose your payment card and enter your billing details.
-        </p>
-    </div>
-
-    <div class="checkout-progress">
+<main class="container section">
+    <div class="checkout-progress mb-lg">
         <span class="active"></span>
         <span class="active"></span>
         <span></span>
         <span></span>
     </div>
 
-    <section class="checkout-card">
-        <h2>Payment information</h2>
-        <p class="section-description">
-            Please complete all fields below.
+    <div style="text-align:center;margin-bottom:28px">
+        <p class="text-muted" style="font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">
+            Secure Checkout
         </p>
+        <h1 class="section-title">Payment Details</h1>
+        <p class="section-subtitle">Choose your payment card and enter your billing details.</p>
+    </div>
 
-        <form th:action="@{/checkout/payment}" method="post"
-              class="checkout-form">
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+        <div class="card-header">
+            <h2>Payment Information</h2>
+            <p class="text-muted">Please complete all fields below.</p>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/checkout/payment}" method="post" class="form-field">
 
-            <div class="form-group">
-                <label for="cardType">Card type</label>
-                <select id="cardType" name="cardType" required>
-                    <option value="">Choose card type</option>
-                    <option value="visa">Visa</option>
-                    <option value="master_card">Mastercard</option>
-                </select>
-            </div>
+                <div class="form-field">
+                    <label for="cardType">Card Type</label>
+                    <select id="cardType" name="cardType" required>
+                        <option value="">Choose card type</option>
+                        <option value="visa">Visa</option>
+                        <option value="master_card">Mastercard</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="cardHolder">Cardholder name</label>
-                <input type="text" id="cardHolder" name="cardHolder"
-                       placeholder="Name printed on the card" required>
-            </div>
+                <div class="form-field">
+                    <label for="cardHolder">Cardholder Name</label>
+                    <input type="text" id="cardHolder" name="cardHolder"
+                           placeholder="Name printed on the card" required>
+                </div>
 
-            <div class="form-group">
-                <label for="billingAddress">Billing address</label>
-                <input type="text" id="billingAddress" name="billingAddress"
-                       placeholder="Your billing address" required>
-            </div>
+                <div class="form-field">
+                    <label for="billingAddress">Billing Address</label>
+                    <input type="text" id="billingAddress" name="billingAddress"
+                           placeholder="Your billing address" required>
+                </div>
 
-            <div class="checkout-actions">
-                <a th:href="@{/checkout/step1}" class="button-secondary">
-                    ← Back
-                </a>
-                <button type="submit" class="button-primary">
-                    Continue to delivery →
-                </button>
-            </div>
-        </form>
-    </section>
+                <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
+                    <a th:href="@{/checkout/step1}" class="btn btn-secondary">← Back</a>
+                    <button type="submit" class="btn btn-primary">Continue to Delivery →</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <footer class="checkout-footer">
+    <p class="text-center text-muted" style="margin-top:24px; font-size:13px;">
         🚗 Car Store · Your order, your journey.
-    </footer>
+    </p>
+
 </main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

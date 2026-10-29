@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
@@ -11,52 +10,17 @@
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
+        /* Minimal additional styles for register page specific layout */
+        .register-page {
             min-height: 100vh;
-            background: #f4f6f8;
-            color: #1f2937;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .register-header {
-            padding: 20px 24px;
-            background: #15232b;
-            color: #ffffff;
-        }
-
-        .register-header-content {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .register-logo {
-            font-size: 22px;
-            font-weight: 750;
-            letter-spacing: -0.5px;
-        }
-
-        .register-back {
-            color: #c8f169;
-            font-size: 14px;
-            text-decoration: none;
-        }
-
-        .register-back:hover {
-            text-decoration: underline;
-            text-underline-offset: 4px;
+            flex-direction: column;
         }
 
         .register-main {
+            flex: 1;
             display: flex;
+            align-items: center;
             justify-content: center;
             padding: 48px 20px 60px;
         }
@@ -67,41 +31,42 @@
             width: 100%;
             max-width: 920px;
             overflow: hidden;
-            border: 1px solid #e5eaf0;
-            border-radius: 18px;
-            background: #ffffff;
-            box-shadow: 0 16px 45px rgba(15, 23, 42, 0.08);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-lg);
+            background: var(--color-surface);
+            box-shadow: var(--shadow-lg);
         }
 
         .register-intro {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            padding: 38px 30px;
-            background: #15232b;
+            padding: 48px 40px;
+            background: var(--color-primary);
             color: #ffffff;
         }
 
         .register-eyebrow {
             display: inline-block;
             margin-bottom: 18px;
-            color: #c8f169;
+            color: var(--color-accent);
             font-size: 11px;
             font-weight: 800;
             letter-spacing: 1.8px;
+            text-transform: uppercase;
         }
 
         .register-intro h1 {
             margin: 0 0 16px;
-            font-size: 34px;
+            font-size: 36px;
             line-height: 1.2;
             letter-spacing: -1px;
         }
 
         .register-intro p {
             margin: 0;
-            color: #bdc9ce;
-            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 15px;
             line-height: 1.8;
         }
 
@@ -115,8 +80,8 @@
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            color: #e3e9ec;
-            font-size: 13px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
             line-height: 1.6;
         }
 
@@ -125,47 +90,48 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            background: #263c44;
-            color: #c8f169;
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-accent);
             font-weight: 700;
+            font-size: 16px;
         }
 
         .register-intro-footer {
             margin-top: 45px;
             padding-top: 18px;
-            border-top: 1px solid #30444c;
-            color: #aebbc2;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.5);
             font-size: 12px;
         }
 
         .register-form-section {
-            padding: 38px 36px;
+            padding: 48px 40px;
         }
 
         .register-form-heading {
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
 
         .register-form-heading h2 {
             margin: 0 0 8px;
-            color: #1e293b;
-            font-size: 24px;
+            color: var(--color-text);
+            font-size: 26px;
             letter-spacing: -0.5px;
         }
 
         .register-form-heading p {
             margin: 0;
-            color: #64748b;
-            font-size: 13px;
+            color: var(--color-text-muted);
+            font-size: 14px;
             line-height: 1.6;
         }
 
         .register-form {
             display: grid;
-            gap: 19px;
+            gap: 20px;
         }
 
         .register-field {
@@ -175,72 +141,75 @@
         }
 
         .register-field label {
-            color: #334155;
+            color: var(--color-text);
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         .register-field input {
             width: 100%;
-            min-height: 46px;
-            padding: 12px 14px;
-            border: 1px solid #dbe2ea;
-            border-radius: 9px;
+            min-height: 48px;
+            padding: 12px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
             outline: none;
-            background: #ffffff;
-            color: #1e293b;
+            background: var(--color-surface);
+            color: var(--color-text);
             font-family: inherit;
-            font-size: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-size: 15px;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
         }
 
         .register-field input::placeholder {
-            color: #a0aab8;
+            color: var(--color-text-muted);
+            opacity: 0.7;
         }
 
         .register-field input:focus {
-            border-color: #647d8a;
-            box-shadow: 0 0 0 3px rgba(100, 125, 138, 0.14);
+            border-color: var(--color-border-focus);
+            box-shadow: 0 0 0 3px rgba(18, 48, 90, 0.12);
         }
 
         .register-field small {
-            color: #94a3b8;
-            font-size: 11px;
+            color: var(--color-text-muted);
+            font-size: 12px;
             line-height: 1.5;
         }
 
         .register-submit {
             width: 100%;
-            min-height: 48px;
-            margin-top: 5px;
-            padding: 12px 18px;
-            border: 1px solid #15232b;
-            border-radius: 9px;
-            background: #15232b;
+            min-height: 50px;
+            margin-top: 8px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: var(--radius-md);
+            background: var(--color-primary);
             color: #ffffff;
             font-family: inherit;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
+            transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
         }
 
-        .register-submit:hover {
-            background: #263c44;
+        .register-submit:hover:not(:disabled) {
+            background: var(--color-primary-dark);
             transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
         .register-submit:disabled {
             opacity: 0.65;
             cursor: wait;
             transform: none;
+            box-shadow: none;
         }
 
         .register-message {
             display: none;
-            margin: 0;
-            padding: 12px 14px;
-            border-radius: 9px;
+            margin: 12px 0 0;
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
             font-size: 13px;
             line-height: 1.6;
             overflow-wrap: anywhere;
@@ -248,29 +217,29 @@
 
         .register-message.success {
             display: block;
-            border: 1px solid #bbf7d0;
+            border: 1px solid rgba(30, 122, 58, 0.2);
             background: #f0fdf4;
-            color: #166534;
+            color: var(--color-success);
         }
 
         .register-message.error {
             display: block;
-            border: 1px solid #fecaca;
+            border: 1px solid rgba(192, 57, 43, 0.2);
             background: #fef2f2;
-            color: #b91c1c;
+            color: var(--color-error);
         }
 
         .register-footer {
-            margin-top: 22px;
+            margin-top: 24px;
             text-align: center;
-            color: #64748b;
+            color: var(--color-text-muted);
             font-size: 12px;
             line-height: 1.7;
         }
 
-        @media (max-width: 720px) {
+        @media (max-width: 768px) {
             .register-main {
-                padding: 25px 14px 40px;
+                padding: 28px 16px 40px;
             }
 
             .register-layout {
@@ -278,55 +247,51 @@
             }
 
             .register-intro {
-                padding: 28px 25px;
+                padding: 36px 30px;
             }
 
             .register-intro h1 {
-                font-size: 29px;
+                font-size: 30px;
             }
 
             .register-benefits {
-                margin-top: 25px;
-            }
-
-            .register-intro-footer {
                 margin-top: 28px;
             }
 
+            .register-intro-footer {
+                margin-top: 32px;
+            }
+
             .register-form-section {
-                padding: 30px 24px;
+                padding: 36px 24px;
             }
         }
 
-        @media (max-width: 420px) {
-            .register-header {
-                padding: 17px;
+        @media (max-width: 480px) {
+            .register-intro {
+                padding: 28px 24px;
             }
 
-            .register-logo {
-                font-size: 19px;
-            }
-
-            .register-back {
-                font-size: 12px;
+            .register-intro h1 {
+                font-size: 26px;
             }
 
             .register-form-section {
-                padding: 25px 18px;
+                padding: 28px 20px;
             }
         }
     </style>
 </head>
 
-<body>
+<body class="register-page">
 
-<header class="register-header">
-    <div class="register-header-content">
-        <div class="register-logo">🚗 Car Store</div>
-
-        <a th:href="@{/}" class="register-back">
-            ← Back to Store
+<header class="site-header">
+    <div class="container flex flex-between">
+        <a href="/" class="site-logo" aria-label="Car Store Home">
+            <span class="logo-icon" aria-hidden="true">🚗</span>
+            <span class="logo-text">Car Store</span>
         </a>
+        <a th:href="@{/}" class="nav-link nav-link--ghost">← Back to Store</a>
     </div>
 </header>
 
@@ -336,7 +301,7 @@
 
         <section class="register-intro">
             <div>
-                <span class="register-eyebrow">WELCOME TO CAR STORE</span>
+                <span class="register-eyebrow">Welcome to Car Store</span>
 
                 <h1>Your next car starts here.</h1>
 
@@ -377,7 +342,7 @@
 
             <form id="registerForm" class="register-form">
 
-                <div class="register-field">
+                <div class="form-field">
                     <label for="firstName">First Name</label>
                     <input
                             type="text"
@@ -388,7 +353,7 @@
                             required>
                 </div>
 
-                <div class="register-field">
+                <div class="form-field">
                     <label for="lastName">Last Name</label>
                     <input
                             type="text"
@@ -399,7 +364,7 @@
                             required>
                 </div>
 
-                <div class="register-field">
+                <div class="form-field">
                     <label for="email">Email Address</label>
                     <input
                             type="email"
@@ -410,7 +375,7 @@
                             required>
                 </div>
 
-                <div class="register-field">
+                <div class="form-field">
                     <label for="pass">Password</label>
                     <input
                             type="password"
@@ -423,7 +388,7 @@
                     <small>Use at least 6 characters.</small>
                 </div>
 
-                <div class="register-field">
+                <div class="form-field">
                     <label for="phone">Phone Number</label>
                     <input
                             type="tel"
@@ -435,7 +400,7 @@
                 </div>
 
                 <button type="submit" id="registerButton"
-                        class="register-submit">
+                        class="register-submit btn btn-primary">
                     Create Account →
                 </button>
 
@@ -456,7 +421,13 @@
 
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
+
+<script th:src="@{/librerias_js/jquery.js}"></script>
 
 <script>
     $("#registerForm").on("submit", function (event) {

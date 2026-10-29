@@ -1,22 +1,32 @@
 package com.mikhail.shop.cars.controllers;
 
+import com.mikhail.shop.cars.dto.DeliveryMethod;
+import com.mikhail.shop.cars.dto.PaymentDetails;
+import com.mikhail.shop.cars.dto.ShippingDetails;
 import com.mikhail.shop.cars.interfaces.ServiceOrder;
 import com.mikhail.shop.cars.model.User;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/checkout")
 public class ControllerCheckout {
 
-    @Autowired
-    private ServiceOrder serviceOrder;
+    private static final Logger log = LoggerFactory.getLogger(ControllerCheckout.class);
+
+    private final ServiceOrder serviceOrder;
+
+    public ControllerCheckout(ServiceOrder serviceOrder) {
+        this.serviceOrder = serviceOrder;
+    }
 
     private User getCurrentUser(HttpServletRequest request) {
         return (User) request.getSession()
@@ -37,12 +47,7 @@ public class ControllerCheckout {
 
     @PostMapping("/shipping")
     public String saveShipping(
-            @RequestParam String fullName,
-            @RequestParam String address,
-            @RequestParam String province,
-            @RequestParam String phone,
-            @RequestParam String city,
-            @RequestParam String postalCode,
+            @Valid @ModelAttribute ShippingDetails shippingDetails,
             HttpServletRequest request,
             Model model) {
 
@@ -52,10 +57,7 @@ public class ControllerCheckout {
             return "redirect:/";
         }
 
-        serviceOrder.processShippingDetails(
-                fullName, address, province,
-                phone, city, postalCode, user.getId()
-        );
+        serviceOrder.processShippingDetails(shippingDetails, user.getId());
 
         model.addAttribute("userId", user.getId());
         return "checkout/check_out_2";
@@ -63,9 +65,7 @@ public class ControllerCheckout {
 
     @PostMapping("/payment")
     public String savePayment(
-            @RequestParam String cardHolder,
-            @RequestParam String cardType,
-            @RequestParam String billingAddress,
+            @Valid @ModelAttribute PaymentDetails paymentDetails,
             HttpServletRequest request,
             Model model) {
 
@@ -75,9 +75,7 @@ public class ControllerCheckout {
             return "redirect:/";
         }
 
-        serviceOrder.processPaymentDetails(
-                cardHolder, cardType, billingAddress, user.getId()
-        );
+        serviceOrder.processPaymentDetails(paymentDetails, user.getId());
 
         model.addAttribute("userId", user.getId());
         return "checkout/check_out_3";
@@ -85,7 +83,7 @@ public class ControllerCheckout {
 
     @PostMapping("/delivery")
     public String saveDelivery(
-            @RequestParam String deliveryMethod,
+            @Valid @ModelAttribute DeliveryMethod deliveryMethod,
             HttpServletRequest request,
             Model model) {
 
@@ -95,9 +93,7 @@ public class ControllerCheckout {
             return "redirect:/";
         }
 
-        serviceOrder.processDeliveryMethod(
-                deliveryMethod, user.getId()
-        );
+        serviceOrder.processDeliveryMethod(deliveryMethod, user.getId());
 
         model.addAttribute("userId", user.getId());
         model.addAttribute(
@@ -113,22 +109,19 @@ public class ControllerCheckout {
         User user = getCurrentUser(request);
 
         if (user == null) {
-            System.out.println("CHECKOUT: user is not logged in");
+            log.warn("Checkout: user is not logged in");
             return "redirect:/";
         }
 
-        System.out.println("CHECKOUT: confirming order for user ID: " + user.getId());
+        log.info("Checkout: confirming order for user ID: {}", user.getId());
 
         try {
             serviceOrder.confirmOrder(user.getId());
-            System.out.println("CHECKOUT: order confirmed successfully");
+            log.info("Checkout: order confirmed successfully");
             return "redirect:/";
         } catch (Exception e) {
-            System.out.println("CHECKOUT: order confirmation failed");
-            e.printStackTrace();
+            log.error("Checkout: order confirmation failed for user ID: {}", user.getId(), e);
             throw e;
         }
     }
-
 }
-

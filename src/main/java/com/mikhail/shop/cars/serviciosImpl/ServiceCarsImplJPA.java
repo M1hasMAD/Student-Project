@@ -1,19 +1,24 @@
 package com.mikhail.shop.cars.serviciosImpl;
 
-import com.mikhail.shop.cars.constantesSQL.ConstantesSQL;
-import com.mikhail.shop.cars.model.Car;
+import com.mikhail.shop.cars.exception.CarNotFoundException;
+import com.mikhail.shop.cars.exception.BusinessException;
 import com.mikhail.shop.cars.interfaces.ServiceCars;
+import com.mikhail.shop.cars.model.Car;
 import com.mikhail.shop.cars.model.CarImage;
 import com.mikhail.shop.cars.model.Category;
+import com.mikhail.shop.cars.repository.CarRepository;
+import com.mikhail.shop.cars.repository.CategoryRepository;
+import com.mikhail.shop.cars.repository.CarImageRepository;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
-import net.coobird.thumbnailator.Thumbnails;
 import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import net.coobird.thumbnailator.Thumbnails;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -21,20 +26,34 @@ import javax.imageio.stream.ImageInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Iterator;
-
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class ServiceCarsImplJPA implements ServiceCars {
 
+    private static final Logger log = LoggerFactory.getLogger(ServiceCarsImplJPA.class);
     private static final long MAX_IMAGE_SIZE = 20L * 1024 * 1024;
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final CarRepository carRepository;
+    private final CategoryRepository categoryRepository;
+    private final CarImageRepository carImageRepository;
+    private final EntityManager entityManager;
+
+    public ServiceCarsImplJPA(CarRepository carRepository,
+                               CategoryRepository categoryRepository,
+                               CarImageRepository carImageRepository,
+                               EntityManager entityManager) {
+        this.carRepository = carRepository;
+        this.categoryRepository = categoryRepository;
+        this.carImageRepository = carImageRepository;
+        this.entityManager = entityManager;
+    }
 
     @Override
     public void registerCar(Car car) {
@@ -54,59 +73,48 @@ public class ServiceCarsImplJPA implements ServiceCars {
                 }
             }
 
-            entityManager.persist(car);
-            entityManager.flush();
+            carRepository.save(car);
+            carRepository.flush();
 
             saveAdditionalImages(car, car.getUploadedPhotos());
 
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Could not process the uploaded images.", e
-            );
+            log.error("Could not process the uploaded images", e);
+            throw new BusinessException("Could not process the uploaded images", e);
         }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Car> getCars() {
-        return entityManager
-                .createQuery("select c from Car c")
-                .getResultList();
+        return carRepository.findAll();
     }
 
     @Override
-    public Car getCarById(long id) {
-        return entityManager.find(Car.class, id);
+    @Transactional(readOnly = true)
+    public Optional<Car> getCarById(long id) {
+        return carRepository.findById(id);
     }
 
     @Override
-    public void deleteCarById(long id) throws Exception {
-        Car carToDelete = entityManager.find(Car.class, id);
-
-        if (carToDelete != null) {
-            entityManager.remove(carToDelete);
-        } else {
-            throw new Exception("ID not found");
+    public void deleteCarById(long id) {
+        if (!carRepository.existsById(id)) {
+            throw new CarNotFoundException(id);
         }
+        carRepository.deleteById(id);
     }
 
     @Override
-    public void saveChangesOfCar(Car carToEdit, Long categoryId) throws Exception {
-
-        Car original = entityManager.find(Car.class, carToEdit.getId());
-
-        if (original == null) {
-            throw new Exception("Car ID not found");
-        }
+    public void saveChangesOfCar(Car carToEdit, Long categoryId) {
+        Car original = carRepository.findById(carToEdit.getId())
+                .orElseThrow(() -> new CarNotFoundException(carToEdit.getId()));
 
         if (categoryId == null) {
-            throw new Exception("Category must be selected");
+            throw new BusinessException("Category must be selected");
         }
 
-        Category category = entityManager.find(Category.class, categoryId);
-
-        if (category == null) {
-            throw new Exception("Category ID not found");
-        }
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new BusinessException("Category ID not found: " + categoryId));
 
         original.setTitle(carToEdit.getTitle());
         original.setPrice(carToEdit.getPrice());
@@ -130,23 +138,32 @@ public class ServiceCarsImplJPA implements ServiceCars {
             );
 
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Could not process the uploaded images.", e
-            );
+            log.error("Could not process the uploaded images", e);
+            throw new BusinessException("Could not process the uploaded images", e);
         }
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Map<String, Object>> getJSONCars() {
-        Query query = entityManager.createNativeQuery(ConstantesSQL.SQL_GET_CARS_JSON);
+        Query query = entityManager.createNativeQuery(
+                "SELECT c.id as id, c.title as title, c.price as price, c.brand as brand, " +
+                        "c.description as description, c.cover_image as coverImage, cat.name as category " +
+                        "FROM tabla_cars c LEFT JOIN tabla_categories cat ON c.category_id = cat.id");
         NativeQueryImpl nativeQuery = (NativeQueryImpl) query;
         nativeQuery.setTupleTransformer(AliasToEntityMapResultTransformer.INSTANCE);
-        return nativeQuery.getResultList();
+
+        List<Map<String, Object>> result = nativeQuery.getResultList();
+        return normalizeKeys(result);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Object> getJSONCarById(Long id) {
-        Query query = entityManager.createNativeQuery(ConstantesSQL.SQL_GET_CAR_JSON);
+        Query query = entityManager.createNativeQuery(
+                "SELECT c.id as id, c.title as title, c.price as price, c.brand as brand, " +
+                        "c.description as description, c.cover_image as coverImage, cat.name as category " +
+                        "FROM tabla_cars c LEFT JOIN tabla_categories cat ON c.category_id = cat.id WHERE c.id = :id");
         query.setParameter("id", id);
 
         NativeQueryImpl nativeQuery = (NativeQueryImpl) query;
@@ -158,29 +175,37 @@ public class ServiceCarsImplJPA implements ServiceCars {
             return Collections.emptyMap();
         }
 
-        return result.get(0);
+        return normalizeKeys(result.get(0));
+    }
+
+    private List<Map<String, Object>> normalizeKeys(List<Map<String, Object>> list) {
+        return list.stream()
+                .map(this::normalizeKeys)
+                .toList();
+    }
+
+    private Map<String, Object> normalizeKeys(Map<String, Object> map) {
+        Map<String, Object> normalized = new LinkedHashMap<>();
+        map.forEach((key, value) -> normalized.put(key.toLowerCase(), value));
+        return normalized;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Category> getCategories() {
-        return entityManager
-                .createQuery("select c from Category c", Category.class)
-                .getResultList();
+        return categoryRepository.findAll();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CarImage> getImagesByCarId(Long carId) {
-        return entityManager.createQuery(
-                        "select i from CarImage i where i.car.id = :carId order by i.id",
-                        CarImage.class
-                )
-                .setParameter("carId", carId)
-                .getResultList();
+        return carImageRepository.findByCarIdOrderById(carId);
     }
 
     @Override
-    public CarImage getImageById(Long imageId) {
-        return entityManager.find(CarImage.class, imageId);
+    @Transactional(readOnly = true)
+    public Optional<CarImage> getImageById(Long imageId) {
+        return carImageRepository.findById(imageId);
     }
 
     private byte[] createThumbnail(byte[] originalImage)
@@ -236,33 +261,25 @@ public class ServiceCarsImplJPA implements ServiceCars {
     private String validateImage(MultipartFile file) throws IOException {
 
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "The uploaded image is empty."
-            );
+            throw new BusinessException("The uploaded image is empty.");
         }
 
         if (file.getSize() > MAX_IMAGE_SIZE) {
-            throw new IllegalArgumentException(
-                    "Each image must not exceed 20 MB."
-            );
+            throw new BusinessException("Each image must not exceed 20 MB.");
         }
 
         try (ImageInputStream input = ImageIO.createImageInputStream(
                 new ByteArrayInputStream(file.getBytes()))) {
 
             if (input == null) {
-                throw new IllegalArgumentException(
-                        "The uploaded file is not a valid image."
-                );
+                throw new BusinessException("The uploaded file is not a valid image.");
             }
 
             Iterator<ImageReader> readers =
                     ImageIO.getImageReaders(input);
 
             if (!readers.hasNext()) {
-                throw new IllegalArgumentException(
-                        "Unsupported image format. Use JPEG or PNG."
-                );
+                throw new BusinessException("Unsupported image format. Use JPEG or PNG.");
             }
 
             ImageReader reader = readers.next();
@@ -277,9 +294,7 @@ public class ServiceCarsImplJPA implements ServiceCars {
                         && !format.equals("jpg")
                         && !format.equals("png")) {
 
-                    throw new IllegalArgumentException(
-                            "Unsupported image format. Use JPEG or PNG."
-                    );
+                    throw new BusinessException("Unsupported image format. Use JPEG or PNG.");
                 }
 
                 return format.equals("jpg") ? "jpeg" : format;

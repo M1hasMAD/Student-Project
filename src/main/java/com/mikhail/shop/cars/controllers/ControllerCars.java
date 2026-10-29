@@ -3,28 +3,36 @@ package com.mikhail.shop.cars.controllers;
 import com.mikhail.shop.cars.model.Car;
 import com.mikhail.shop.cars.interfaces.ServiceCars;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("admin/")
+@RequestMapping("/admin")
 public class ControllerCars {
 
-    @Autowired
-    private ServiceCars serviceCars;
+    private static final Logger log = LoggerFactory.getLogger(ControllerCars.class);
 
-    @RequestMapping("manageCars")
+    private final ServiceCars serviceCars;
+
+    public ControllerCars(ServiceCars serviceCars) {
+        this.serviceCars = serviceCars;
+    }
+
+    @GetMapping("/manageCars")
     public String manageCars(Model model) {
         model.addAttribute("cars", serviceCars.getCars());
         return "admin/manage_products";
     }
 
-    @RequestMapping("registerCar")
+    @GetMapping("/registerCar")
     public String registerCar(Model model) {
         Car newCar = new Car();
         newCar.setPrice(1);
@@ -35,7 +43,7 @@ public class ControllerCars {
         return "admin/manage_product";
     }
 
-    @RequestMapping("saveCar")
+    @PostMapping("/saveCar")
     public String saveCar(
             @ModelAttribute("newCar")
             @Valid
@@ -43,7 +51,7 @@ public class ControllerCars {
             BindingResult validationResult,
             Model model) {
 
-        System.out.println("Received car to register: " + newCar);
+        log.info("Received car to register: {}", newCar);
 
         if (validationResult.hasErrors()) {
             model.addAttribute("categories", serviceCars.getCategories());
@@ -56,14 +64,14 @@ public class ControllerCars {
     }
 
 
-    @RequestMapping("saveChangesOfCar")
+    @PostMapping("/saveChangesOfCar")
     public String saveChangesOfCar(
             @ModelAttribute("carToEdit")
             @Valid
             Car carToEdit,
             BindingResult validationResult,
             @RequestParam(value = "categoryId", required = false) Long categoryId,
-            Model model) throws Exception {
+            Model model) {
 
         if (validationResult.hasErrors()) {
             model.addAttribute("categories", serviceCars.getCategories());
@@ -76,12 +84,17 @@ public class ControllerCars {
     }
 
 
-    @RequestMapping("editCar")
+    @GetMapping("/editCar")
     public String editCar(@RequestParam("id") Long id, Model model) {
+
+        var carOptional = serviceCars.getCarById(id);
+        if (carOptional.isEmpty()) {
+            return "redirect:/admin/manageCars";
+        }
 
         model.addAttribute(
                 "carToEdit",
-                serviceCars.getCarById(id)
+                carOptional.get()
         );
 
         model.addAttribute(
@@ -92,11 +105,11 @@ public class ControllerCars {
         return "admin/edit_product";
     }
 
-    @RequestMapping("deleteCar")
+    @PostMapping("/deleteCar")
     public String deleteCar(@RequestParam("id") Long id,
-                            Model model) throws Exception {
+                            Model model) {
 
-        System.out.println("Received id to delete: " + id);
+        log.info("Received id to delete: {}", id);
 
         serviceCars.deleteCarById(id);
 

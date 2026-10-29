@@ -4,80 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Cars</title>
-
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
-
 <body>
 
-<div th:insert="fragments/general.html :: menu"></div>
+<div th:insert="fragments/general.html :: admin-header"></div>
 
-<main class="admin-container">
-
-    <div class="page-header">
+<main class="container section">
+    <div class="page-header flex flex-between gap-md">
         <div>
-            <h1>Manage Cars</h1>
-            <p>View, edit and delete cars from the store.</p>
+            <h1 class="section-title">Manage Cars</h1>
+            <p class="section-subtitle">View, edit and delete cars from the store.</p>
         </div>
-
-        <a th:href="@{/admin/registerCar}"
-           class="button button-primary">
-            + Add New Car
-        </a>
+        <a th:href="@{/admin/registerCar}" class="btn btn-primary">+ Add New Car</a>
     </div>
 
-    <div class="cars-grid">
-
+    <div class="grid grid-4 gap-lg" th:if="${cars != null and not #lists.isEmpty(cars)}">
         <div class="car-card" th:each="car : ${cars}">
-
             <div class="car-image-container">
-                <img th:src="@{/get_image(id=${car.id})}"
+                <img th:src="@{/images/get_thumbnail(id=${car.id})}"
                      alt="Car image"
-                     class="car-image">
+                     class="car-card-image"
+                     th:onerror="|this.onerror=null; this.src='/images/get_image?id=' + ${car.id};|">
             </div>
-
-            <div class="car-content">
-
-                <h2 th:text="${car.title}">
-                    Car title
-                </h2>
-
-                <div class="car-price">
-                    €<span th:text="${car.price}">0</span>
+            <div class="car-card-content">
+                <h2 class="car-card-title" th:text="${car.title}">Car title</h2>
+                <p class="car-card-price">€<span th:text="${car.price}">0</span></p>
+                <p class="car-card-info"><strong>Brand:</strong> <span th:text="${car.brand}"></span></p>
+                <p class="car-card-info"><strong>Category:</strong> <span th:text="${car.category?.name}"></span></p>
+                <p class="car-card-info"><strong>Description:</strong> <span th:text="${car.description}"></span></p>
+                <div class="car-card-actions">
+                    <a th:href="@{/admin/editCar(id=${car.id})}" class="btn btn-secondary" style="width: 100%; text-align: center;">Edit</a>
+                    <a th:href="@{/admin/deleteCar(id=${car.id})}" class="btn btn-ghost" style="width: 100%; text-align: center; color: var(--color-error);" onclick="return confirm('Are you sure you want to delete this car?')">Delete</a>
                 </div>
-
-                <p class="car-brand">
-                    <strong>Brand:</strong>
-                    <span th:text="${car.brand}"></span>
-                </p>
-
-                <p class="car-description"
-                   th:text="${car.description}">
-                    Car description
-                </p>
-
-                <div class="card-actions">
-
-                    <a th:href="@{/admin/editCar(id=${car.id})}"
-                       class="button button-secondary">
-                        Edit
-                    </a>
-
-                    <a th:href="@{/admin/deleteCar(id=${car.id})}"
-                       class="button button-danger"
-                       onclick="return confirm('Are you sure you want to delete this car?')">
-                        Delete
-                    </a>
-
-                </div>
-
             </div>
-
         </div>
-
     </div>
 
+    <div class="card text-center" th:if="${cars == null or #lists.isEmpty(cars)}" style="padding: 60px 20px;">
+        <p style="font-size: 18px; color: var(--color-text-muted); margin: 0 0 24px;">No cars found.</p>
+        <a th:href="@{/admin/registerCar}" class="btn btn-primary">+ Add Your First Car</a>
+    </div>
 </main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

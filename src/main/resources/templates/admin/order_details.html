@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<div th:insert="fragments/general.html :: admin-header"></div>
+
+<main class="container section">
+    <div class="page-header flex flex-between gap-md">
+        <div>
+            <h1 class="section-title">Order Details</h1>
+            <p class="section-subtitle">View complete order information.</p>
+        </div>
+        <a th:href="@{/admin/manageOrders}" class="btn btn-secondary">← Back to Orders</a>
+    </div>
+
+    <div class="grid grid-2 gap-lg" th:if="${order != null}">
+        <!-- Order Information -->
+        <div class="card">
+            <div class="card-header flex flex-between gap-md">
+                <h2>Order Information</h2>
+                <span class="badge" th:classappend="${order.status == 'COMPLETED' ? ' badge-success' : (order.status == 'IN_PROGRESS' ? ' badge-primary' : ' badge-accent')}" th:text="${order.status}"></span>
+            </div>
+            <div class="card-body">
+                <dl class="summary-list">
+                    <dt>Order ID</dt>
+                    <dd th:text="${order.id}"></dd>
+
+                    <dt>Customer</dt>
+                    <dd th:text="${order.fullName}"></dd>
+
+                    <dt>Status</dt>
+                    <dd>
+                        <span class="badge" th:classappend="${order.status == 'COMPLETED' ? ' badge-success' : (order.status == 'IN_PROGRESS' ? ' badge-primary' : ' badge-accent')}" th:text="${order.status}"></span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Shipping Details -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Shipping Details</h2>
+            </div>
+            <div class="card-body">
+                <dl class="summary-list">
+                    <dt>Full Name</dt>
+                    <dd th:text="${order.fullName}"></dd>
+
+                    <dt>Address</dt>
+                    <dd th:text="${order.address}"></dd>
+
+                    <dt>Province</dt>
+                    <dd th:text="${order.province}"></dd>
+
+                    <dt>Phone</dt>
+                    <dd th:text="${order.phone}"></dd>
+
+                    <dt>City</dt>
+                    <dd th:text="${order.city}"></dd>
+
+                    <dt>Postal Code</dt>
+                    <dd th:text="${order.postalCode}"></dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Payment Details -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Payment Details</h2>
+            </div>
+            <div class="card-body">
+                <dl class="summary-list">
+                    <dt>Card Holder</dt>
+                    <dd th:text="${order.cardHolder}"></dd>
+
+                    <dt>Card Type</dt>
+                    <dd th:text="${order.cardType}"></dd>
+
+                    <dt>Billing Address</dt>
+                    <dd th:text="${order.billingAddress}"></dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- Delivery Method -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Delivery Method</h2>
+            </div>
+            <div class="card-body">
+                <p class="badge badge-accent" style="font-size: 14px; padding: 8px 16px;" th:if="${order.deliveryMethod == 'HOME_DELIVERY'}">Home Delivery</p>
+                <p class="badge badge-accent" style="font-size: 14px; padding: 8px 16px;" th:if="${order.deliveryMethod == 'STORE_PICKUP'}">Store Pickup</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cars in Order -->
+    <div class="card" th:if="${order != null and not #lists.isEmpty(order.orderItems)}">
+        <div class="card-header">
+            <h2>Cars in Order</h2>
+        </div>
+        <div class="card-body" style="padding: 0;">
+            <div class="table-wrapper">
+                <table class="category-table">
+                    <thead>
+                    <tr>
+                        <th>Car</th>
+                        <th>Price per Unit</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${order.orderItems}">
+                        <td th:text="${item.car.title}"></td>
+                        <td>€<span th:text="${item.car.price}"></span></td>
+                        <td th:text="${item.quantity}"></td>
+                        <td>€<span th:text="${item.car.price * item.quantity}"></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card text-center" th:if="${order != null and #lists.isEmpty(order.orderItems)}" style="padding: 48px 24px;">
+        <p style="margin: 0;">No cars found in this order.</p>
+    </div>
+
+    <div class="card text-center" th:if="${order == null}" style="padding: 48px 24px;">
+        <p style="margin: 0;">Order not found.</p>
+        <a th:href="@{/admin/manageOrders}" class="btn btn-primary" style="margin-top: 16px;">← Back to Orders</a>
+    </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
+
+</body>
+</html>

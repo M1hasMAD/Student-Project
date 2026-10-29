@@ -1,79 +1,67 @@
 package com.mikhail.shop.cars.serviciosImpl;
 
+import com.mikhail.shop.cars.exception.UserNotFoundException;
 import com.mikhail.shop.cars.interfaces.ServiceUsers;
 import com.mikhail.shop.cars.model.User;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
+import com.mikhail.shop.cars.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
 public class ServiceUsersImplJPA implements ServiceUsers {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final UserRepository userRepository;
+
+    public ServiceUsersImplJPA(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> getUsers() {
-        return entityManager
-                .createQuery("select u from User u", User.class)
-                .getResultList();
+        return userRepository.findAll();
     }
 
     @Override
-    public User getUserById(long id) {
-        return entityManager.find(User.class, id);
+    @Transactional(readOnly = true)
+    public Optional<User> getUserById(long id) {
+        return userRepository.findById(id);
     }
 
     @Override
-    public User getUserByEmail(String email) {
-        List<User> result = entityManager
-                .createQuery(
-                        "select u from User u where lower(u.email) = lower(:email)",
-                        User.class
-                )
-                .setParameter("email", email.trim())
-                .getResultList();
-
-        return result.isEmpty() ? null : result.get(0);
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmailIgnoreCase(email.trim());
     }
 
     @Override
-    public User getUserByEmailYPass(String email, String pass) {
-        List<User> result = entityManager
-                .createQuery(
-                        "select u from User u " +
-                                "where lower(u.email) = lower(:email) and u.pass = :pass",
-                        User.class
-                )
-                .setParameter("email", email.trim())
-                .setParameter("pass", pass)
-                .getResultList();
-
-        return result.isEmpty() ? null : result.get(0);
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByEmailYPass(String email, String pass) {
+        return userRepository.findByEmailIgnoreCaseAndPass(email.trim(), pass);
     }
 
     @Override
     public void registerUser(User user) {
-        entityManager.persist(user);
+        userRepository.save(user);
     }
 
     @Override
     public void saveChangesOfUser(User user) {
-        entityManager.merge(user);
+        if (!userRepository.existsById(user.getId())) {
+            throw new UserNotFoundException(user.getId());
+        }
+        userRepository.save(user);
     }
 
     @Override
-    public void deleteUserById(long id) throws Exception {
-        User user = entityManager.find(User.class, id);
-
-        if (user == null) {
-            throw new Exception("User ID not found");
+    public void deleteUserById(long id) {
+        if (!userRepository.existsById(id)) {
+            throw new UserNotFoundException(id);
         }
-
-        entityManager.remove(user);
+        userRepository.deleteById(id);
     }
 }

@@ -1,91 +1,82 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add User</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <title>Create User</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
 
-<div th:insert="fragments/general.html :: menu"></div>
+<div th:insert="fragments/general.html :: admin-header"></div>
 
-<main class="admin-container category-form-page">
-
-    <div class="page-header">
+<main class="container section">
+    <div class="page-header flex flex-between gap-md">
         <div>
-            <span class="section-label">STORE MANAGEMENT</span>
-            <h1>Create User</h1>
-            <p>Add a new user to the system.</p>
+            <h1 class="section-title">Create User</h1>
+            <p class="section-subtitle">Add a new user to the system.</p>
         </div>
-
-        <a th:href="@{/admin/manageUsers}"
-           class="button button-secondary">
-            ← Back to users
-        </a>
+        <a th:href="@{/admin/manageUsers}" class="btn btn-secondary">← Back to Users</a>
     </div>
 
-    <section class="category-form-card">
-        <div class="category-form-heading">
-            <div class="category-form-icon">+</div>
-            <div>
-                <h2>User Information</h2>
-                <p>Complete all fields to create a user.</p>
-            </div>
+    <div class="card" style="max-width: 600px;">
+        <div class="card-header">
+            <h2>User Information</h2>
+            <p class="text-muted">Complete all fields to create a user.</p>
         </div>
+        <div class="card-body">
+            <form th:action="@{/admin/saveUser}"
+                  th:object="${newUser}"
+                  method="post"
+                  class="form-field">
 
-        <form th:action="@{/admin/saveUser}"
-              th:object="${newUser}"
-              method="post"
-              class="category-form">
+                <div class="form-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email"
+                           th:field="*{email}"
+                           placeholder="user@example.com" required>
+                </div>
 
-            <div class="category-form-field">
-                <label for="email">Email</label>
-                <input type="email" id="email"
-                       th:field="*{email}"
-                       placeholder="user@example.com" required>
-            </div>
+                <div class="form-field">
+                    <label for="pass">Password</label>
+                    <input type="password" id="pass"
+                           th:field="*{pass}"
+                           placeholder="Enter password" required>
+                </div>
 
-            <div class="category-form-field">
-                <label for="pass">Password</label>
-                <input type="password" id="pass"
-                       th:field="*{pass}"
-                       placeholder="Enter password" required>
-            </div>
+                <div class="form-field">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName"
+                           th:field="*{firstName}" required>
+                </div>
 
-            <div class="category-form-field">
-                <label for="firstName">First Name</label>
-                <input type="text" id="firstName"
-                       th:field="*{firstName}" required>
-            </div>
+                <div class="form-field">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName"
+                           th:field="*{lastName}" required>
+                </div>
 
-            <div class="category-form-field">
-                <label for="lastName">Last Name</label>
-                <input type="text" id="lastName"
-                       th:field="*{lastName}" required>
-            </div>
+                <div class="form-field">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone"
+                           th:field="*{phone}"
+                           placeholder="+34 600 000 000" required>
+                </div>
 
-            <div class="category-form-field">
-                <label for="phone">Phone</label>
-                <input type="tel" id="phone"
-                       th:field="*{phone}"
-                       placeholder="+34 600 000 000" required>
-            </div>
-
-            <div class="category-form-actions">
-                <a th:href="@{/admin/manageUsers}"
-                   class="button button-secondary">Cancel</a>
-
-                <button type="submit"
-                        class="button category-primary-button">
-                    Save User →
-                </button>
-            </div>
-        </form>
-    </section>
-
+                <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
+                    <a th:href="@{/admin/manageUsers}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

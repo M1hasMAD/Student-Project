@@ -4,125 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Car</title>
-
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
-
 <body>
 
-<div th:insert="fragments/general.html :: menu"></div>
+<div th:insert="fragments/general.html :: admin-header"></div>
 
-<main class="admin-container">
-
-    <div class="page-header">
+<main class="container section">
+    <div class="page-header flex flex-between gap-md">
         <div>
-            <h1>Register New Car</h1>
-            <p>Add a new car to your online store.</p>
+            <h1 class="section-title">Register New Car</h1>
+            <p class="section-subtitle">Add a new car to your online store.</p>
         </div>
-
-        <a th:href="@{/admin/manageCars}" class="button button-secondary">
-            ← Back to cars
-        </a>
+        <a th:href="@{/admin/manageCars}" class="btn btn-secondary">← Back to Cars</a>
     </div>
 
-    <div class="form-card">
+    <div class="card" style="max-width: 800px;">
+        <div class="card-header">
+            <h2>Car Details</h2>
+            <p class="text-muted">Fill in the information below to register a new vehicle.</p>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/admin/saveCar}"
+                  th:object="${newCar}"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="form-field">
 
-        <form th:action="@{/admin/saveCar}"
-              th:object="${newCar}"
-              method="post"
-              enctype="multipart/form-data">
+                <div class="form-field">
+                    <label for="title">Title</label>
+                    <input id="title"
+                           type="text"
+                           th:field="*{title}"
+                           placeholder="Enter car title"
+                           required>
+                    <span class="error text-error" style="font-size: 12px; margin-top: 4px;"
+                          th:if="${#fields.hasErrors('title')}"
+                          th:errors="*{title}"></span>
+                </div>
 
-            <div class="form-group">
-                <label for="title">Title</label>
+                <div class="form-field">
+                    <label for="price">Price (€)</label>
+                    <input id="price"
+                           type="number"
+                           step="0.01"
+                           min="1"
+                           max="99999"
+                           th:field="*{price}"
+                           placeholder="Enter price"
+                           required>
+                    <span class="error text-error" style="font-size: 12px; margin-top: 4px;"
+                          th:if="${#fields.hasErrors('price')}"
+                          th:errors="*{price}"></span>
+                </div>
 
-                <input id="title"
-                       type="text"
-                       th:field="*{title}"
-                       placeholder="Enter car title">
+                <div class="form-field">
+                    <label for="brand">Brand</label>
+                    <input id="brand"
+                           type="text"
+                           th:field="*{brand}"
+                           placeholder="Enter car brand"
+                           required>
+                </div>
 
-                <span class="error"
-                      th:if="${#fields.hasErrors('title')}"
-                      th:errors="*{title}">
-                </span>
-            </div>
+                <div class="form-field">
+                    <label for="category">Category</label>
+                    <select id="category"
+                            th:field="*{category}"
+                            required>
+                        <option value="">Select category</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.id}"
+                                th:text="${category.name}"></option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="price">Price (€)</label>
+                <div class="form-field">
+                    <label for="description">Description</label>
+                    <textarea id="description"
+                              th:field="*{description}"
+                              rows="5"
+                              placeholder="Enter car description"></textarea>
+                </div>
 
-                <input id="price"
-                       type="number"
-                       step="0.01"
-                       th:field="*{price}"
-                       placeholder="Enter price">
+                <div class="form-field">
+                    <label for="uploadedPhoto">Car Image</label>
+                    <input id="uploadedPhoto"
+                           type="file"
+                           th:field="*{uploadedPhoto}"
+                           accept="image/*">
+                    <small>Upload a main image for the car (JPEG or PNG, max 20MB)</small>
+                </div>
 
-                <span class="error"
-                      th:if="${#fields.hasErrors('price')}"
-                      th:errors="*{price}">
-                </span>
-            </div>
+                <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
+                    <a th:href="@{/admin/manageCars}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Register Car</button>
+                </div>
 
-            <div class="form-group">
-                <label for="brand">Brand</label>
-
-                <input id="brand"
-                       type="text"
-                       th:field="*{brand}"
-                       placeholder="Enter car brand">
-            </div>
-
-            <div class="form-group">
-                <label for="category">Category</label>
-
-                <select id="category"
-                        th:field="*{category}">
-
-                    <option value="">Select category</option>
-
-                    <option th:each="category : ${categories}"
-                            th:value="${category.id}"
-                            th:text="${category.name}">
-                    </option>
-
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="description">Description</label>
-
-                <textarea id="description"
-                          th:field="*{description}"
-                          rows="5"
-                          placeholder="Enter car description"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="uploadedPhoto">Car image</label>
-
-                <input id="uploadedPhoto"
-                       type="file"
-                       th:field="*{uploadedPhoto}"
-                       accept="image/*">
-            </div>
-
-            <div class="form-actions">
-
-                <a th:href="@{/admin/manageCars}"
-                   class="button button-secondary">
-                    Cancel
-                </a>
-
-                <button type="submit"
-                        class="button button-primary">
-                    Register Car
-                </button>
-
-            </div>
-
-        </form>
-
+            </form>
+        </div>
     </div>
-
 </main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

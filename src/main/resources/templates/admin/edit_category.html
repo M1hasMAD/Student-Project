@@ -1,81 +1,71 @@
-
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Category</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
 
-<div th:insert="fragments/general.html :: menu"></div>
+<div th:insert="fragments/general.html :: admin-header"></div>
 
-<main class="admin-container category-form-page">
-
-    <div class="page-header">
+<main class="container section">
+    <div class="page-header flex flex-between gap-md">
         <div>
-            <span class="section-label">STORE MANAGEMENT</span>
-            <h1>Edit Category</h1>
-            <p>Update the information for this category.</p>
+            <h1 class="section-title">Edit Category</h1>
+            <p class="section-subtitle">Update the information for this category.</p>
         </div>
-
-        <a th:href="@{/admin/manageCategories}"
-           class="button button-secondary">
-            ← Back to categories
-        </a>
+        <a th:href="@{/admin/manageCategories}" class="btn btn-secondary">← Back to Categories</a>
     </div>
 
-    <section class="category-form-card">
-        <div class="category-form-heading">
-            <div class="category-form-icon">✎</div>
-            <div>
-                <h2>Category Information</h2>
-                <p>Make your changes and save them when you're done.</p>
-            </div>
+    <div class="card" style="max-width: 600px;">
+        <div class="card-header">
+            <h2>Category Information</h2>
+            <p class="text-muted">Make your changes and save them when you're done.</p>
         </div>
+        <div class="card-body">
+            <form th:action="@{/admin/saveChangesOfCategory}"
+                  th:object="${categoryToEdit}"
+                  method="post"
+                  class="form-field">
 
-        <form th:action="@{/admin/saveChangesOfCategory}"
-              th:object="${categoryToEdit}"
-              method="post"
-              class="category-form">
+                <input type="hidden" th:field="*{id}">
 
-            <input type="hidden" th:field="*{id}">
+                <div class="form-field">
+                    <label for="name">Category Name</label>
+                    <input type="text"
+                           id="name"
+                           th:field="*{name}"
+                           placeholder="e.g. Electric"
+                           required>
+                    <small>Choose a short, descriptive name.</small>
+                </div>
 
-            <div class="category-form-field">
-                <label for="name">Category Name</label>
-                <input type="text"
-                       id="name"
-                       th:field="*{name}"
-                       placeholder="e.g. Electric"
-                       required>
-                <small>Choose a short, descriptive name.</small>
-            </div>
+                <div class="form-field">
+                    <label for="description">Description</label>
+                    <textarea id="description"
+                              th:field="*{description}"
+                              rows="5"
+                              placeholder="Describe the cars in this category..."
+                              required></textarea>
+                    <small>Explain what type of cars belong to this category.</small>
+                </div>
 
-            <div class="category-form-field">
-                <label for="description">Description</label>
-                <textarea id="description"
-                          th:field="*{description}"
-                          rows="5"
-                          placeholder="Describe the cars in this category..."
-                          required></textarea>
-                <small>Explain what type of cars belong to this category.</small>
-            </div>
-
-            <div class="category-form-actions">
-                <a th:href="@{/admin/manageCategories}"
-                   class="button button-secondary">
-                    Cancel
-                </a>
-
-                <button type="submit" class="button category-primary-button">
-                    Save Changes →
-                </button>
-            </div>
-        </form>
-    </section>
-
+                <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
+                    <a th:href="@{/admin/manageCategories}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p>&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
 
 </body>
 </html>

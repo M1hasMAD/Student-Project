@@ -2,62 +2,70 @@ package com.mikhail.shop.cars.controllers;
 
 import com.mikhail.shop.cars.interfaces.ServiceUsers;
 import com.mikhail.shop.cars.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@RequestMapping("/admin")
 public class ControllerUsers {
 
-    @Autowired
-    private ServiceUsers serviceUsers;
+    private static final Logger log = LoggerFactory.getLogger(ControllerUsers.class);
 
-    @RequestMapping("admin/manageUsers")
+    private final ServiceUsers serviceUsers;
+
+    public ControllerUsers(ServiceUsers serviceUsers) {
+        this.serviceUsers = serviceUsers;
+    }
+
+    @GetMapping("/manageUsers")
     public String manageUsers(Model model) {
         model.addAttribute("users", serviceUsers.getUsers());
         return "admin/manage_users";
     }
 
-    @RequestMapping("admin/registerUser")
+    @GetMapping("/registerUser")
     public String registerUser(Model model) {
         model.addAttribute("newUser", new User());
         return "admin/manage_user";
     }
 
-    @RequestMapping("admin/saveUser")
+    @PostMapping("/saveUser")
     public String saveUser(User newUser) {
         serviceUsers.registerUser(newUser);
         return "redirect:/admin/manageUsers";
     }
 
-    @RequestMapping("admin/editUser")
+    @GetMapping("/editUser")
     public String editUser(@RequestParam("id") long id, Model model) {
-        User user = serviceUsers.getUserById(id);
+        var userOptional = serviceUsers.getUserById(id);
 
-        if (user == null) {
+        if (userOptional.isEmpty()) {
             return "redirect:/admin/manageUsers";
         }
 
-        model.addAttribute("userToEdit", user);
+        model.addAttribute("userToEdit", userOptional.get());
         return "admin/edit_user";
     }
 
-    @RequestMapping("admin/saveChangesOfUser")
+    @PostMapping("/saveChangesOfUser")
     public String saveChangesOfUser(User userToEdit) {
         serviceUsers.saveChangesOfUser(userToEdit);
         return "redirect:/admin/manageUsers";
     }
 
-    @RequestMapping("admin/deleteUser")
+    @PostMapping("/deleteUser")
     public String deleteUser(@RequestParam("id") long id) {
         try {
             serviceUsers.deleteUserById(id);
         } catch (Exception e) {
-            return "redirect:/admin/manageUsers";
+            log.error("Error deleting user with id: {}", id, e);
         }
-
         return "redirect:/admin/manageUsers";
     }
 }
