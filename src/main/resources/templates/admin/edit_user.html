@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit User</title>
+    <title th:text="#{admin.edit_user.title} + ' | ' + #{app.name}">Edit User</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
@@ -13,16 +13,16 @@
 <main class="container section">
     <div class="page-header flex flex-between gap-md">
         <div>
-            <h1 class="section-title">Edit User</h1>
-            <p class="section-subtitle">Update the user's information.</p>
+            <h1 class="section-title" th:text="#{admin.edit_user.title}">Edit User</h1>
+            <p class="section-subtitle" th:text="#{admin.edit_user.subtitle}">Update the user's information.</p>
         </div>
-        <a th:href="@{/admin/manageUsers}" class="btn btn-secondary">← Back to Users</a>
+        <a th:href="@{/admin/manageUsers}" class="btn btn-secondary" th:text="#{admin.edit_user.cancel}">← Back to Users</a>
     </div>
 
     <div class="card" style="max-width: 600px;">
         <div class="card-header">
-            <h2>User Information</h2>
-            <p class="text-muted">Update the fields and save your changes.</p>
+            <h2 th:text="#{admin.edit_user.title_label}">User Information</h2>
+            <p class="text-muted" th:text="#{admin.edit_user.subtitle}">Update the fields and save your changes.</p>
         </div>
         <div class="card-body">
             <form th:action="@{/admin/saveChangesOfUser}"
@@ -33,7 +33,7 @@
                 <input type="hidden" th:field="*{id}">
 
                 <div class="form-field">
-                    <label for="email">Email</label>
+                    <label for="email" th:text="#{admin.edit_user.email_label}">Email</label>
                     <input type="email" id="email"
                            th:field="*{email}" required>
                 </div>
@@ -46,26 +46,26 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="firstName">First Name</label>
+                    <label for="firstName" th:text="#{admin.edit_user.first_name_label}">First Name</label>
                     <input type="text" id="firstName"
                            th:field="*{firstName}" required>
                 </div>
 
                 <div class="form-field">
-                    <label for="lastName">Last Name</label>
+                    <label for="lastName" th:text="#{admin.edit_user.last_name_label}">Last Name</label>
                     <input type="text" id="lastName"
                            th:field="*{lastName}" required>
                 </div>
 
                 <div class="form-field">
-                    <label for="phone">Phone</label>
+                    <label for="phone" th:text="#{admin.edit_user.phone_label}">Phone</label>
                     <input type="tel" id="phone"
                            th:field="*{phone}" required>
                 </div>
 
                 <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
-                    <a th:href="@{/admin/manageUsers}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a th:href="@{/admin/manageUsers}" class="btn btn-secondary" th:text="#{admin.edit_user.cancel}">Cancel</a>
+                    <button type="submit" class="btn btn-primary" th:text="#{admin.edit_user.save}">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -74,9 +74,11 @@
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
+
+<div th:insert="fragments/general.html :: language-script"></div>
 
 </body>
 </html>

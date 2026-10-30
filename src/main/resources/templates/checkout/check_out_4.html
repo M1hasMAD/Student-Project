@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - Order Summary</title>
+    <title th:text="#{checkout.step4.title} + ' | ' + #{app.name}">Checkout - Order Summary</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
@@ -12,9 +12,20 @@
     <div class="container flex flex-between">
         <a href="/" class="site-logo" aria-label="Car Store Home">
             <span class="logo-icon" aria-hidden="true">🚗</span>
-            <span class="logo-text">Car Store</span>
+            <span class="logo-text" th:text="#{app.name}">Car Store</span>
         </a>
-        <a href="/" class="nav-link nav-link--ghost">← Back to Store</a>
+
+        <!-- Language Switcher -->
+        <div class="language-switcher">
+            <span class="language-label" th:text="#{language}">Language</span>
+            <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
+                <option value="en" th:selected="${#locale.language == 'en'}" th:text="#{language.en}">English</option>
+                <option value="es" th:selected="${#locale.language == 'es'}" th:text="#{language.es}">Español</option>
+                <option value="ru" th:selected="${#locale.language == 'ru'}" th:text="#{language.ru}">Русский</option>
+            </select>
+        </div>
+
+        <a href="/" class="nav-link nav-link--ghost" th:text="#{nav.back_to_store}">← Back to Store</a>
     </div>
 </header>
 
@@ -27,68 +38,66 @@
     </div>
 
     <div style="text-align:center;margin-bottom:28px">
-        <p class="text-muted" style="font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">
-            Almost There
-        </p>
-        <h1 class="section-title">Review Your Order</h1>
-        <p class="section-subtitle">Check your details before confirming your order.</p>
+        <p class="text-muted" style="font-weight:600;font-size:13px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;" th:text="#{checkout.almost_there}">Almost There</p>
+        <h1 class="section-title" th:text="#{checkout.step4.title}">Review Your Order</h1>
+        <p class="section-subtitle" th:text="#{checkout.step4.subtitle}">Check your details before confirming your order.</p>
     </div>
 
     <div class="card" style="max-width: 900px; margin: 0 auto;">
         <div class="card-header">
-            <h2>Order Summary</h2>
-            <p class="text-muted">Review your delivery, payment and vehicle details.</p>
+            <h2 th:text="#{checkout.step4.summary}">Order Summary</h2>
+            <p class="text-muted" th:text="#{checkout.step4.review_details}">Review your delivery, payment and vehicle details.</p>
         </div>
         <div class="card-body">
             <div class="summary-grid" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px;">
                 <section class="summary-section" style="min-width: 0; padding: 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface);">
-                    <h3 style="margin: 0 0 18px; font-size: 17px;">📍 Shipping Details</h3>
+                    <h3 style="margin: 0 0 18px; font-size: 17px;" th:text="#{checkout.step4.shipping}">📍 Shipping Details</h3>
                     <dl class="summary-list" style="display: grid; grid-template-columns: minmax(100px, 0.8fr) minmax(0, 1.2fr); gap: 12px; margin: 0; font-size: 14px;">
-                        <dt style="color: var(--color-text-muted);">Full Name</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step1.full_name}">Full Name</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.fullName}"></dd>
 
-                        <dt style="color: var(--color-text-muted);">Street Address</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step1.address}">Street Address</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.address}"></dd>
 
-                        <dt style="color: var(--color-text-muted);">Province</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step1.province}">Province</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.province}"></dd>
 
-                        <dt style="color: var(--color-text-muted);">Phone</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step1.phone}">Phone</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.phone}"></dd>
 
-                        <dt style="color: var(--color-text-muted);">City</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step1.city}">City</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.city}"></dd>
 
-                        <dt style="color: var(--color-text-muted);">Postal Code</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step1.postal_code}">Postal Code</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.postalCode}"></dd>
                     </dl>
                 </section>
 
                 <section class="summary-section" style="min-width: 0; padding: 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface);">
-                    <h3 style="margin: 0 0 18px; font-size: 17px;">💳 Payment Details</h3>
+                    <h3 style="margin: 0 0 18px; font-size: 17px;" th:text="#{checkout.step2.payment_info}">💳 Payment Details</h3>
                     <dl class="summary-list" style="display: grid; grid-template-columns: minmax(100px, 0.8fr) minmax(0, 1.2fr); gap: 12px; margin: 0; font-size: 14px;">
-                        <dt style="color: var(--color-text-muted);">Cardholder</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step2.cardholder}">Cardholder</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.cardHolder}"></dd>
 
-                        <dt style="color: var(--color-text-muted);">Card Type</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step2.card_type}">Card Type</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.cardType}"></dd>
 
-                        <dt style="color: var(--color-text-muted);">Billing Address</dt>
+                        <dt style="color: var(--color-text-muted);" th:text="#{checkout.step2.billing_address}">Billing Address</dt>
                         <dd style="margin: 0; font-weight: 600; overflow-wrap: anywhere;" th:text="${orderSummary.billingAddress}"></dd>
                     </dl>
                 </section>
 
                 <section class="summary-section summary-section-full" style="grid-column: 1 / -1; min-width: 0; padding: 20px; border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface);">
-                    <h3 style="margin: 0 0 18px; font-size: 17px;">🚚 Delivery Method</h3>
-                    <p th:if="${orderSummary.deliveryMethod == 'HOME_DELIVERY'}" class="badge badge-accent" style="display: inline-block; margin: 0; padding: 8px 12px; border-radius: 8px; background: #edf3f5; color: var(--color-primary); font-weight: 700;">Home Delivery</p>
-                    <p th:if="${orderSummary.deliveryMethod == 'STORE_PICKUP'}" class="badge badge-accent" style="display: inline-block; margin: 0; padding: 8px 12px; border-radius: 8px; background: #edf3f5; color: var(--color-primary); font-weight: 700;">Store Pickup</p>
+                    <h3 style="margin: 0 0 18px; font-size: 17px;" th:text="#{checkout.step3.how_receive}">🚚 Delivery Method</h3>
+                    <p th:if="${orderSummary.deliveryMethod == 'HOME_DELIVERY'}" class="badge badge-accent" style="display: inline-block; margin: 0; padding: 8px 12px; border-radius: 8px; background: #edf3f5; color: var(--color-primary); font-weight: 700;" th:text="#{checkout.step3.home_delivery}">Home Delivery</p>
+                    <p th:if="${orderSummary.deliveryMethod == 'STORE_PICKUP'}" class="badge badge-accent" style="display: inline-block; margin: 0; padding: 8px 12px; border-radius: 8px; background: #edf3f5; color: var(--color-primary); font-weight: 700;" th:text="#{checkout.step3.store_pickup}">Store Pickup</p>
                 </section>
             </div>
 
             <section class="summary-section cars-summary" style="margin-top: 24px;">
-                <h3 style="margin: 0 0 18px; font-size: 17px;">🚗 Cars in Your Order</h3>
+                <h3 style="margin: 0 0 18px; font-size: 17px;" th:text="#{checkout.step4.cars_in_order}">🚗 Cars in Your Order</h3>
 
-                <div th:if="${#lists.isEmpty(orderSummary.cars)}" class="text-center text-muted" style="padding: 32px;">
+                <div th:if="${#lists.isEmpty(orderSummary.cars)}" class="text-center text-muted" style="padding: 32px;" th:text="#{cart.empty}">
                     Your cart is empty.
                 </div>
 
@@ -96,10 +105,10 @@
                     <table class="category-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
                         <thead>
                         <tr>
-                            <th style="padding: 14px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-background); color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;">Car</th>
-                            <th style="padding: 14px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-background); color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;">Price</th>
-                            <th style="padding: 14px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-background); color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;">Quantity</th>
-                            <th style="padding: 14px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-background); color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;">Subtotal</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-background); color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;" th:text="#{car.title}">Car</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-background); color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;" th:text="#{car.price}">Price</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-background); color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;" th:text="#{car.quantity}">Quantity</th>
+                            <th style="padding: 14px 12px; border-bottom: 1px solid var(--color-border); background: var(--color-background); color: var(--color-text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;" th:text="#{cart.subtotal}">Subtotal</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -115,25 +124,27 @@
             </section>
 
             <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
-                <a th:href="@{/checkout/step1}" class="btn btn-secondary">← Back to Store</a>
+                <a th:href="@{/checkout/step1}" class="btn btn-secondary" th:text="#{nav.back_to_store}">← Back to Store</a>
                 <form th:action="@{/checkout/confirm}" method="post" style="margin: 0;">
-                    <button type="submit" class="btn btn-primary">Confirm Order ✓</button>
+                    <button type="submit" class="btn btn-primary" th:text="#{checkout.step4.confirm_order}">Confirm Order ✓</button>
                 </form>
             </div>
         </div>
     </div>
 
     <p class="text-center text-muted" style="margin-top:24px; font-size:13px;">
-        🚗 Car Store · Your order, your journey.
+        🚗 <span th:text="#{app.name}">Car Store</span> · Your order, your journey.
     </p>
 
 </main>
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
+
+<div th:insert="fragments/general.html :: language-script"></div>
 
 </body>
 </html>

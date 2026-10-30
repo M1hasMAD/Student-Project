@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Registered Successfully</title>
+    <title th:text="#{admin.register_product_ok.title} + ' | ' + #{app.name}">Car Registered Successfully</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
@@ -14,12 +14,12 @@
     <div class="card text-center" style="max-width: 600px; margin: 0 auto;">
         <div class="card-body" style="padding: 60px 40px;">
             <div class="success-icon" style="width: 80px; height: 80px; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(30, 122, 58, 0.1); color: var(--color-success); font-size: 40px;">✓</div>
-            <h1 style="margin: 0 0 12px; font-size: 28px;">Car Registered Successfully</h1>
-            <p class="text-muted" style="margin: 0 0 32px;">The new car has been added to your store.</p>
+            <h1 style="margin: 0 0 12px; font-size: 28px;" th:text="#{admin.register_product_ok.title}">Car Registered Successfully</h1>
+            <p class="text-muted" style="margin: 0 0 32px;" th:text="#{admin.register_product_ok.message}">The new car has been added to your store.</p>
             <div class="flex flex-center gap-md" style="flex-wrap: wrap;">
-                <a th:href="@{/admin/manageCars}" class="btn btn-primary">View All Cars</a>
-                <a th:href="@{/admin/registerCar}" class="btn btn-secondary">Add Another Car</a>
-                <a th:href="@{/admin/startAdmin}" class="btn btn-ghost">Back to Dashboard</a>
+                <a th:href="@{/admin/manageCars}" class="btn btn-primary" th:text="#{admin.manage_cars.title}">View All Cars</a>
+                <a th:href="@{/admin/registerCar}" class="btn btn-secondary" th:text="#{admin.register_car.add_new}">Add Another Car</a>
+                <a th:href="@{/admin/startAdmin}" class="btn btn-ghost" th:text="#{admin.register_product_ok.back}">Back to Dashboard</a>
             </div>
         </div>
     </div>
@@ -27,9 +27,11 @@
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
+
+<div th:insert="fragments/general.html :: language-script"></div>
 
 </body>
 </html>

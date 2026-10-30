@@ -14,18 +14,39 @@
         <div class="container flex flex-between">
             <a href="/" class="site-logo" aria-label="Car Store Home">
                 <span class="logo-icon" aria-hidden="true">🚗</span>
-                <span class="logo-text">Car Store</span>
+                <span class="logo-text" th:text="#{app.name}">Car Store</span>
             </a>
             <nav class="site-nav" aria-label="Admin navigation">
-                <a th:href="@{/admin/manageCars}" class="nav-link">Cars</a>
-                <a th:href="@{/admin/registerCar}" class="nav-link">Add Car</a>
-                <a th:href="@{/admin/manageUsers}" class="nav-link">Users</a>
-                <a th:href="@{/admin/manageCategories}" class="nav-link">Categories</a>
-                <a th:href="@{/admin/manageOrders}" class="nav-link">Orders</a>
-                <a href="/" class="nav-link nav-link--admin">Back to Store</a>
+                <a th:href="@{/admin/manageCars}" class="nav-link" th:text="#{admin.cars}">Cars</a>
+                <a th:href="@{/admin/registerCar}" class="nav-link" th:text="#{admin.add_car}">Add Car</a>
+                <a th:href="@{/admin/manageUsers}" class="nav-link" th:text="#{admin.users}">Users</a>
+                <a th:href="@{/admin/manageCategories}" class="nav-link" th:text="#{admin.categories}">Categories</a>
+                <a th:href="@{/admin/manageOrders}" class="nav-link" th:text="#{admin.orders}">Orders</a>
+                <a href="/" class="nav-link nav-link--admin" th:text="#{nav.back_to_store}">Back to Store</a>
             </nav>
+
+            <!-- Language Switcher -->
+            <div class="language-switcher">
+                <span class="language-label" th:text="#{language}">Language</span>
+                <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
+                    <option value="en" th:selected="${#locale.language == 'en'}" th:text="#{language.en}">English</option>
+                    <option value="es" th:selected="${#locale.language == 'es'}" th:text="#{language.es}">Español</option>
+                    <option value="ru" th:selected="${#locale.language == 'ru'}" th:text="#{language.ru}">Русский</option>
+                </select>
+            </div>
         </div>
     </header>
+</th:block>
+
+<th:block th:fragment="language-script">
+    <script>
+        function changeLanguage(lang) {
+            const currentUrl = window.location.href;
+            const url = new URL(currentUrl);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        }
+    </script>
 </th:block>
 
 </body>

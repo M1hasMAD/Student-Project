@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Details</title>
+    <title th:text="#{admin.order_details.title} + ' | ' + #{app.name}">Order Details</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
@@ -13,28 +13,28 @@
 <main class="container section">
     <div class="page-header flex flex-between gap-md">
         <div>
-            <h1 class="section-title">Order Details</h1>
+            <h1 class="section-title" th:text="#{admin.order_details.title}">Order Details</h1>
             <p class="section-subtitle">View complete order information.</p>
         </div>
-        <a th:href="@{/admin/manageOrders}" class="btn btn-secondary">← Back to Orders</a>
+        <a th:href="@{/admin/manageOrders}" class="btn btn-secondary" th:text="#{admin.order_details.back_to_orders}">← Back to Orders</a>
     </div>
 
     <div class="grid grid-2 gap-lg" th:if="${order != null}">
         <!-- Order Information -->
         <div class="card">
             <div class="card-header flex flex-between gap-md">
-                <h2>Order Information</h2>
+                <h2 th:text="#{admin.order_details.order_info}">Order Information</h2>
                 <span class="badge" th:classappend="${order.status == 'COMPLETED' ? ' badge-success' : (order.status == 'IN_PROGRESS' ? ' badge-primary' : ' badge-accent')}" th:text="${order.status}"></span>
             </div>
             <div class="card-body">
                 <dl class="summary-list">
-                    <dt>Order ID</dt>
+                    <dt th:text="#{admin.manage_orders.order_id}">Order ID</dt>
                     <dd th:text="${order.id}"></dd>
 
-                    <dt>Customer</dt>
+                    <dt th:text="#{admin.manage_orders.customer}">Customer</dt>
                     <dd th:text="${order.fullName}"></dd>
 
-                    <dt>Status</dt>
+                    <dt th:text="#{admin.manage_orders.status}">Status</dt>
                     <dd>
                         <span class="badge" th:classappend="${order.status == 'COMPLETED' ? ' badge-success' : (order.status == 'IN_PROGRESS' ? ' badge-primary' : ' badge-accent')}" th:text="${order.status}"></span>
                     </dd>
@@ -45,26 +45,26 @@
         <!-- Shipping Details -->
         <div class="card">
             <div class="card-header">
-                <h2>Shipping Details</h2>
+                <h2 th:text="#{admin.order_details.shipping_info}">Shipping Details</h2>
             </div>
             <div class="card-body">
                 <dl class="summary-list">
-                    <dt>Full Name</dt>
+                    <dt th:text="#{checkout.step1.full_name}">Full Name</dt>
                     <dd th:text="${order.fullName}"></dd>
 
-                    <dt>Address</dt>
+                    <dt th:text="#{checkout.step1.address}">Address</dt>
                     <dd th:text="${order.address}"></dd>
 
-                    <dt>Province</dt>
+                    <dt th:text="#{checkout.step1.province}">Province</dt>
                     <dd th:text="${order.province}"></dd>
 
-                    <dt>Phone</dt>
+                    <dt th:text="#{checkout.step1.phone}">Phone</dt>
                     <dd th:text="${order.phone}"></dd>
 
-                    <dt>City</dt>
+                    <dt th:text="#{checkout.step1.city}">City</dt>
                     <dd th:text="${order.city}"></dd>
 
-                    <dt>Postal Code</dt>
+                    <dt th:text="#{checkout.step1.postal_code}">Postal Code</dt>
                     <dd th:text="${order.postalCode}"></dd>
                 </dl>
             </div>
@@ -73,17 +73,17 @@
         <!-- Payment Details -->
         <div class="card">
             <div class="card-header">
-                <h2>Payment Details</h2>
+                <h2 th:text="#{admin.order_details.payment_info}">Payment Details</h2>
             </div>
             <div class="card-body">
                 <dl class="summary-list">
-                    <dt>Card Holder</dt>
+                    <dt th:text="#{checkout.step2.cardholder}">Card Holder</dt>
                     <dd th:text="${order.cardHolder}"></dd>
 
-                    <dt>Card Type</dt>
+                    <dt th:text="#{checkout.step2.card_type}">Card Type</dt>
                     <dd th:text="${order.cardType}"></dd>
 
-                    <dt>Billing Address</dt>
+                    <dt th:text="#{checkout.step2.billing_address}">Billing Address</dt>
                     <dd th:text="${order.billingAddress}"></dd>
                 </dl>
             </div>
@@ -92,11 +92,11 @@
         <!-- Delivery Method -->
         <div class="card">
             <div class="card-header">
-                <h2>Delivery Method</h2>
+                <h2 th:text="#{admin.order_details.delivery_info}">Delivery Method</h2>
             </div>
             <div class="card-body">
-                <p class="badge badge-accent" style="font-size: 14px; padding: 8px 16px;" th:if="${order.deliveryMethod == 'HOME_DELIVERY'}">Home Delivery</p>
-                <p class="badge badge-accent" style="font-size: 14px; padding: 8px 16px;" th:if="${order.deliveryMethod == 'STORE_PICKUP'}">Store Pickup</p>
+                <p class="badge badge-accent" style="font-size: 14px; padding: 8px 16px;" th:if="${order.deliveryMethod == 'HOME_DELIVERY'}" th:text="#{checkout.step3.home_delivery}">Home Delivery</p>
+                <p class="badge badge-accent" style="font-size: 14px; padding: 8px 16px;" th:if="${order.deliveryMethod == 'STORE_PICKUP'}" th:text="#{checkout.step3.store_pickup}">Store Pickup</p>
             </div>
         </div>
     </div>
@@ -104,17 +104,17 @@
     <!-- Cars in Order -->
     <div class="card" th:if="${order != null and not #lists.isEmpty(order.orderItems)}">
         <div class="card-header">
-            <h2>Cars in Order</h2>
+            <h2 th:text="#{admin.order_details.items}">Cars in Order</h2>
         </div>
         <div class="card-body" style="padding: 0;">
             <div class="table-wrapper">
                 <table class="category-table">
                     <thead>
                     <tr>
-                        <th>Car</th>
-                        <th>Price per Unit</th>
-                        <th>Quantity</th>
-                        <th>Subtotal</th>
+                        <th th:text="#{car.title}">Car</th>
+                        <th th:text="#{cart.price}">Price per Unit</th>
+                        <th th:text="#{cart.quantity}">Quantity</th>
+                        <th th:text="#{cart.subtotal}">Subtotal</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -136,15 +136,17 @@
 
     <div class="card text-center" th:if="${order == null}" style="padding: 48px 24px;">
         <p style="margin: 0;">Order not found.</p>
-        <a th:href="@{/admin/manageOrders}" class="btn btn-primary" style="margin-top: 16px;">← Back to Orders</a>
+        <a th:href="@{/admin/manageOrders}" class="btn btn-primary" style="margin-top: 16px;" th:text="#{admin.order_details.back_to_orders}">← Back to Orders</a>
     </div>
 </main>
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
+
+<div th:insert="fragments/general.html :: language-script"></div>
 
 </body>
 </html>

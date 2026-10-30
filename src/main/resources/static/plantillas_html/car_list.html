@@ -11,18 +11,18 @@
         <p class="car-card-price">€{{price}}</p>
 
         <div class="car-card-info">
-            <p><strong>Brand:</strong> {{brand}}</p>
-            <p><strong>Category:</strong> {{category}}</p>
+            <p><strong data-i18n="car.brand">Brand:</strong> {{brand}}</p>
+            <p><strong data-i18n="car.category">Category:</strong> {{category}}</p>
         </div>
 
         <a href="#" onclick="showDetails({{id}}); return false;"
-           class="car-details-link">
+           class="car-details-link" data-i18n="car.view_details">
             View details
         </a>
 
         <div class="car-card-actions">
             <div class="quantity-control">
-                <label for="listQuantity-{{id}}">Quantity</label>
+                <label for="listQuantity-{{id}}" data-i18n="car.quantity">Quantity</label>
                 <input id="listQuantity-{{id}}"
                        type="number"
                        value="1"
@@ -31,7 +31,8 @@
 
             <button type="button"
                     class="add-cart-button"
-                    onclick="addToCart({{id}}, document.getElementById('listQuantity-{{id}}').value)">
+                    onclick="addToCart({{id}}, document.getElementById('listQuantity-{{id}}').value)"
+                    data-i18n="car.add_to_cart">
                 <span>＋</span> Add to Cart
             </button>
         </div>

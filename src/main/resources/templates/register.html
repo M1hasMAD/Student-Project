@@ -5,9 +5,43 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Create Account | Car Store</title>
+    <title th:text="#{nav.register} + ' | ' + #{app.name}">Create Account | Car Store</title>
 
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
+
+    <!-- i18n messages for JavaScript -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.messages = {
+            register: {
+                title: [[#{nav.register}]],
+                subtitle: 'Fill in your details to get started.',
+                firstName: 'First Name',
+                lastName: 'Last Name',
+                email: 'Email Address',
+                password: 'Password',
+                phone: 'Phone Number',
+                placeholderFirstName: 'Enter your first name',
+                placeholderLastName: 'Enter your last name',
+                placeholderEmail: 'you@example.com',
+                placeholderPassword: 'Create a password',
+                placeholderPhone: '+34 600 000 000',
+                passwordHint: 'Use at least 6 characters.',
+                submit: 'Create Account',
+                creating: 'Creating account...',
+                success: 'Registration successful',
+                error: 'Registration failed. Please try again.',
+                welcomeTitle: 'Welcome to Car Store',
+                welcomeSubtitle: 'Create your personal account and enjoy a more convenient way to explore our collection of cars.',
+                benefit1: 'Discover our collection of cars.',
+                benefit2: 'Keep your personal information in one place.',
+                benefit3: 'Get ready for future account features.',
+                footer: 'By creating an account, you provide your details to register with Car Store.',
+                backToStore: [[#{nav.back_to_store}]]
+            }
+        };
+        /*]]>*/
+    </script>
 
     <style>
         /* Minimal additional styles for register page specific layout */
@@ -289,9 +323,20 @@
     <div class="container flex flex-between">
         <a href="/" class="site-logo" aria-label="Car Store Home">
             <span class="logo-icon" aria-hidden="true">🚗</span>
-            <span class="logo-text">Car Store</span>
+            <span class="logo-text" th:text="#{app.name}">Car Store</span>
         </a>
-        <a th:href="@{/}" class="nav-link nav-link--ghost">← Back to Store</a>
+
+        <!-- Language Switcher -->
+        <div class="language-switcher">
+            <span class="language-label" th:text="#{language}">Language</span>
+            <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
+                <option value="en" th:selected="${#locale.language == 'en'}" th:text="#{language.en}">English</option>
+                <option value="es" th:selected="${#locale.language == 'es'}" th:text="#{language.es}">Español</option>
+                <option value="ru" th:selected="${#locale.language == 'ru'}" th:text="#{language.ru}">Русский</option>
+            </select>
+        </div>
+
+        <a th:href="@{/}" class="nav-link nav-link--ghost" th:text="#{nav.back_to_store}">← Back to Store</a>
     </div>
 </header>
 
@@ -301,11 +346,11 @@
 
         <section class="register-intro">
             <div>
-                <span class="register-eyebrow">Welcome to Car Store</span>
+                <span class="register-eyebrow" th:text="#{register.welcomeTitle}">Welcome to Car Store</span>
 
-                <h1>Your next car starts here.</h1>
+                <h1 th:text="#{register.welcomeSubtitle}">Your next car starts here.</h1>
 
-                <p>
+                <p th:text="#{register.welcomeSubtitle}">
                     Create your personal account and enjoy a more convenient
                     way to explore our collection of cars.
                 </p>
@@ -313,94 +358,97 @@
                 <div class="register-benefits">
                     <div class="register-benefit">
                         <span class="benefit-icon">✓</span>
-                        <span>Discover our collection of cars.</span>
+                        <span th:text="#{register.benefit1}">Discover our collection of cars.</span>
                     </div>
 
                     <div class="register-benefit">
                         <span class="benefit-icon">✓</span>
-                        <span>Keep your personal information in one place.</span>
+                        <span th:text="#{register.benefit2}">Keep your personal information in one place.</span>
                     </div>
 
                     <div class="register-benefit">
                         <span class="benefit-icon">✓</span>
-                        <span>Get ready for future account features.</span>
+                        <span th:text="#{register.benefit3}">Get ready for future account features.</span>
                     </div>
                 </div>
             </div>
 
-            <div class="register-intro-footer">
-                Find your next car with Car Store.
-            </div>
+            <div class="register-intro-footer" th:text="#{app.name} + '. ' + #{register.welcomeSubtitle}">Find your next car with Car Store.</div>
         </section>
 
         <section class="register-form-section">
 
             <div class="register-form-heading">
-                <h2>Create your account</h2>
-                <p>Fill in your details to get started.</p>
+                <h2 th:text="#{register.title}">Create your account</h2>
+                <p th:text="#{register.subtitle}">Fill in your details to get started.</p>
             </div>
 
             <form id="registerForm" class="register-form">
 
                 <div class="form-field">
-                    <label for="firstName">First Name</label>
+                    <label for="firstName" th:text="#{register.firstName}">First Name</label>
                     <input
                             type="text"
                             id="firstName"
                             name="firstName"
+                            th:placeholder="#{register.placeholderFirstName}"
                             placeholder="Enter your first name"
                             autocomplete="given-name"
                             required>
                 </div>
 
                 <div class="form-field">
-                    <label for="lastName">Last Name</label>
+                    <label for="lastName" th:text="#{register.lastName}">Last Name</label>
                     <input
                             type="text"
                             id="lastName"
                             name="lastName"
+                            th:placeholder="#{register.placeholderLastName}"
                             placeholder="Enter your last name"
                             autocomplete="family-name"
                             required>
                 </div>
 
                 <div class="form-field">
-                    <label for="email">Email Address</label>
+                    <label for="email" th:text="#{register.email}">Email Address</label>
                     <input
                             type="email"
                             id="email"
                             name="email"
+                            th:placeholder="#{register.placeholderEmail}"
                             placeholder="you@example.com"
                             autocomplete="email"
                             required>
                 </div>
 
                 <div class="form-field">
-                    <label for="pass">Password</label>
+                    <label for="pass" th:text="#{register.password}">Password</label>
                     <input
                             type="password"
                             id="pass"
                             name="pass"
+                            th:placeholder="#{register.placeholderPassword}"
                             placeholder="Create a password"
                             autocomplete="new-password"
                             minlength="6"
                             required>
-                    <small>Use at least 6 characters.</small>
+                    <small th:text="#{register.passwordHint}">Use at least 6 characters.</small>
                 </div>
 
                 <div class="form-field">
-                    <label for="phone">Phone Number</label>
+                    <label for="phone" th:text="#{register.phone}">Phone Number</label>
                     <input
                             type="tel"
                             id="phone"
                             name="phone"
+                            th:placeholder="#{register.placeholderPhone}"
                             placeholder="+34 600 000 000"
                             autocomplete="tel"
                             required>
                 </div>
 
                 <button type="submit" id="registerButton"
-                        class="register-submit btn btn-primary">
+                        class="register-submit btn btn-primary" th:text="#{register.submit} + ' →'">
                     Create Account →
                 </button>
 
@@ -410,7 +458,7 @@
                    aria-live="polite"></p>
             </form>
 
-            <div class="register-footer">
+            <div class="register-footer" th:text="#{register.footer}">
                 By creating an account, you provide your details
                 to register with Car Store.
             </div>
@@ -423,15 +471,23 @@
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
 
 <script th:src="@{/librerias_js/jquery.js}"></script>
 
 <script>
+    function changeLanguage(lang) {
+        const currentUrl = window.location.href;
+        const url = new URL(currentUrl);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+    }
+
     $("#registerForm").on("submit", function (event) {
         event.preventDefault();
+        const msg = window.messages.register;
 
         const form = this;
         const button = $("#registerButton");
@@ -439,17 +495,27 @@
 
         message.removeClass("success error").hide().text("");
 
-        button.prop("disabled", true).text("Creating account...");
+        button.prop("disabled", true).text(msg.creating);
+
+        // Prepare data for REST API (expects JSON with password field)
+        const formData = {
+            email: $("#email").val(),
+            password: $("#pass").val(),
+            firstName: $("#firstName").val(),
+            lastName: $("#lastName").val(),
+            phone: $("#phone").val()
+        };
 
         $.ajax({
-            url: "/restUsuarios/registrarUsuario",
+            url: "/api/users/register",
             method: "POST",
-            data: $(form).serialize(),
+            contentType: "application/json",
+            data: JSON.stringify(formData),
 
             success: function (response) {
                 const text = String(response);
 
-                if (text.startsWith("Registration successful")) {
+                if (text.startsWith(msg.success)) {
                     message
                         .removeClass("error")
                         .addClass("success")
@@ -470,12 +536,12 @@
                 message
                     .removeClass("success")
                     .addClass("error")
-                    .text("Registration failed. Please try again.")
+                    .text(msg.error)
                     .show();
             },
 
             complete: function () {
-                button.prop("disabled", false).text("Create Account →");
+                button.prop("disabled", false).text(msg.submit + " →");
             }
         });
     });

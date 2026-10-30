@@ -1,12 +1,12 @@
 <div class="cart-container">
     <div class="cart-header">
-        <h1>Shopping Cart</h1>
+        <h1 data-i18n="cart.title">Shopping Cart</h1>
     </div>
 
     {{#empty}}
     <div class="card text-center" style="padding: 60px 20px;">
-        <p style="font-size: 20px; color: var(--color-text-muted); margin: 0 0 24px;">Your shopping cart is empty.</p>
-        <a href="#" onclick="showCars(); return false;" class="btn btn-primary">← Continue Shopping</a>
+        <p style="font-size: 20px; color: var(--color-text-muted); margin: 0 0 24px;" data-i18n="cart.empty">Your shopping cart is empty.</p>
+        <a href="#" onclick="showCars(); return false;" class="btn btn-primary" data-i18n="cart.continue_shopping">← Continue Shopping</a>
     </div>
     {{/empty}}
 
@@ -17,12 +17,12 @@
 
         <div class="cart-item-details">
             <h3 class="cart-item-title">{{title}}</h3>
-            <p class="cart-item-price">Price: €{{price}}</p>
-            <p class="cart-item-subtotal">Subtotal: €{{subtotal}}</p>
+            <p class="cart-item-price"><span data-i18n="cart.price">Price:</span> €{{price}}</p>
+            <p class="cart-item-subtotal"><span data-i18n="cart.subtotal">Subtotal:</span> €{{subtotal}}</p>
         </div>
 
         <div class="cart-item-actions">
-            <label for="cartQuantity-{{id}}">Quantity:</label>
+            <label for="cartQuantity-{{id}}" data-i18n="cart.quantity">Quantity:</label>
             <input id="cartQuantity-{{id}}" type="number"
                    min="1" value="{{quantity}}"
                    style="width: 70px; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 14px; text-align: center;">
@@ -30,14 +30,16 @@
             <button type="button"
                     class="btn btn-secondary"
                     onclick="updateCartQuantity({{id}})"
-                    style="padding: 8px 16px;">
+                    style="padding: 8px 16px;"
+                    data-i18n="cart.update">
                 Update
             </button>
 
             <button type="button"
                     class="btn btn-ghost"
                     onclick="removeFromCart({{id}})"
-                    style="padding: 8px 16px; color: var(--color-error);">
+                    style="padding: 8px 16px; color: var(--color-error);"
+                    data-i18n="cart.remove">
                 Remove
             </button>
         </div>
@@ -46,20 +48,22 @@
 
     <div class="cart-summary">
         <div class="cart-summary-totals">
-            <span class="cart-summary-label">Total quantity: <strong>{{totalQuantity}}</strong></span>
-            <span class="cart-summary-total">Total: €{{total}}</span>
+            <span class="cart-summary-label"><span data-i18n="cart.total_quantity">Total quantity:</span> <strong>{{totalQuantity}}</strong></span>
+            <span class="cart-summary-total"><span data-i18n="cart.total">Total:</span> €{{total}}</span>
         </div>
         <div class="cart-actions">
             <button type="button"
                     onclick="showCars()"
                     class="btn btn-secondary"
-                    style="padding: 12px 24px;">
+                    style="padding: 12px 24px;"
+                    data-i18n="cart.continue_shopping">
                 Continue Shopping
             </button>
             <button type="button"
                     onclick="window.location.href='/checkout/step1'"
                     class="btn btn-primary"
-                    style="padding: 12px 24px;">
+                    style="padding: 12px 24px;"
+                    data-i18n="cart.proceed_checkout">
                 Proceed to Checkout
             </button>
         </div>

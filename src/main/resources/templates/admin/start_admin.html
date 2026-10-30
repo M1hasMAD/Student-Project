@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
+    <title th:text="#{admin.start_admin.title} + ' | ' + #{app.name}">Admin Panel</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
@@ -13,8 +13,8 @@
 <main class="container section">
     <div class="hero-section" style="margin-bottom: 32px;">
         <div class="hero-content">
-            <h1 class="section-title">Admin Panel</h1>
-            <p class="section-subtitle">Manage your cars and store information from this section.</p>
+            <h1 class="section-title" th:text="#{admin.start_admin.title}">Admin Panel</h1>
+            <p class="section-subtitle" th:text="#{admin.start_admin.subtitle}">Manage your cars and store information from this section.</p>
         </div>
     </div>
 
@@ -22,40 +22,40 @@
         <a th:href="@{/admin/manageCars}" class="card dashboard-card">
             <div class="card-body text-center">
                 <span class="dashboard-icon" style="font-size: 40px; display: block; margin-bottom: 12px;">🚗</span>
-                <strong style="font-size: 18px; display: block; margin-bottom: 8px;">Manage Cars</strong>
-                <span class="text-muted">View, edit and delete cars</span>
+                <strong style="font-size: 18px; display: block; margin-bottom: 8px;" th:text="#{admin.start_admin.manage_cars}">Manage Cars</strong>
+                <span class="text-muted" th:text="#{admin.start_admin.manage_cars_desc}">View, edit and delete cars</span>
             </div>
         </a>
 
         <a th:href="@{/admin/registerCar}" class="card dashboard-card">
             <div class="card-body text-center">
                 <span class="dashboard-icon" style="font-size: 40px; display: block; margin-bottom: 12px;">＋</span>
-                <strong style="font-size: 18px; display: block; margin-bottom: 8px;">Add Car</strong>
-                <span class="text-muted">Register a new car</span>
+                <strong style="font-size: 18px; display: block; margin-bottom: 8px;" th:text="#{admin.start_admin.add_car}">Add Car</strong>
+                <span class="text-muted" th:text="#{admin.start_admin.add_car_desc}">Register a new car</span>
             </div>
         </a>
 
         <a th:href="@{/admin/manageUsers}" class="card dashboard-card">
             <div class="card-body text-center">
                 <span class="dashboard-icon" style="font-size: 40px; display: block; margin-bottom: 12px;">👤</span>
-                <strong style="font-size: 18px; display: block; margin-bottom: 8px;">Manage Users</strong>
-                <span class="text-muted">Manage store users</span>
+                <strong style="font-size: 18px; display: block; margin-bottom: 8px;" th:text="#{admin.start_admin.manage_users}">Manage Users</strong>
+                <span class="text-muted" th:text="#{admin.start_admin.manage_users_desc}">Manage store users</span>
             </div>
         </a>
 
         <a th:href="@{/admin/manageCategories}" class="card dashboard-card">
             <div class="card-body text-center">
                 <span class="dashboard-icon" style="font-size: 40px; display: block; margin-bottom: 12px;">📂</span>
-                <strong style="font-size: 18px; display: block; margin-bottom: 8px;">Manage Categories</strong>
-                <span class="text-muted">View, edit and delete categories</span>
+                <strong style="font-size: 18px; display: block; margin-bottom: 8px;" th:text="#{admin.start_admin.manage_categories}">Manage Categories</strong>
+                <span class="text-muted" th:text="#{admin.start_admin.manage_categories_desc}">View, edit and delete categories</span>
             </div>
         </a>
 
         <a th:href="@{/admin/manageOrders}" class="card dashboard-card">
             <div class="card-body text-center">
                 <span class="dashboard-icon" style="font-size: 40px; display: block; margin-bottom: 12px;">📋</span>
-                <strong style="font-size: 18px; display: block; margin-bottom: 8px;">Manage Orders</strong>
-                <span class="text-muted">View and update orders</span>
+                <strong style="font-size: 18px; display: block; margin-bottom: 8px;" th:text="#{admin.start_admin.manage_orders}">Manage Orders</strong>
+                <span class="text-muted" th:text="#{admin.start_admin.manage_orders_desc}">View and update orders</span>
             </div>
         </a>
     </div>
@@ -63,9 +63,11 @@
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
+
+<div th:insert="fragments/general.html :: language-script"></div>
 
 </body>
 </html>

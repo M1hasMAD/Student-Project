@@ -5,12 +5,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Car Store</title>
+    <title th:text="#{app.name}">Car Store</title>
 
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 
     <script th:src="@{/librerias_js/jquery.js}"></script>
     <script th:src="@{/librerias_js/mustache.js}"></script>
+    <!-- i18n messages for JavaScript templates -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.messages = {
+            login: {
+                title: [[#{login.title}]],
+                email: [[#{login.email}]],
+                password: [[#{login.password}]],
+                submit: [[#{login.submit}]],
+                messageSuccess: [[#{login.message.success}]],
+                messageError: [[#{login.message.error}]]
+            },
+            account: {
+                title: [[#{account.title}]],
+                name: [[#{account.name}]],
+                email: [[#{account.email}]],
+                phone: [[#{account.phone}]]
+            },
+            cart: {
+                empty: [[#{cart.empty}]],
+                continueShopping: [[#{cart.continue_shopping}]],
+                totalQuantity: [[#{cart.total_quantity}]],
+                total: [[#{cart.total}]],
+                update: [[#{cart.update}]],
+                remove: [[#{cart.remove}]],
+                proceedCheckout: [[#{cart.proceed_checkout}]],
+                price: [[#{cart.price}]],
+                subtotal: [[#{cart.subtotal}]],
+                quantity: [[#{cart.quantity}]]
+            },
+            home: {
+                welcome: [[#{home.welcome}]],
+                subtitle: [[#{home.subtitle}]],
+                browseVehicles: [[#{home.browse_vehicles}]],
+                selectVehicles: [[#{home.select_vehicles}]]
+            },
+            car: {
+                brand: [[#{car.brand}]],
+                category: [[#{car.category}]],
+                price: [[#{car.price}]],
+                viewDetails: [[#{car.view_details}]],
+                quantity: [[#{car.quantity}]],
+                addToCart: [[#{car.add_to_cart}]],
+                backToListings: [[#{car.back_to_listings}]]
+            }
+        };
+        /*]]>*/
+    </script>
 </head>
 
 
@@ -20,22 +68,32 @@
     <div class="container flex flex-between">
         <a href="/" class="site-logo" aria-label="Car Store Home">
             <span class="logo-icon" aria-hidden="true">🚗</span>
-            <span class="logo-text">Car Store</span>
+            <span class="logo-text" th:text="#{app.name}">Car Store</span>
         </a>
 
         <nav class="site-nav" aria-label="Main navigation">
-            <a href="#" id="cars" class="nav-link">Vehicles</a>
-            <a href="#" id="register" class="nav-link">Register</a>
-            <a href="#" id="login" class="nav-link">Sign In</a>
+            <a href="#" id="cars" class="nav-link" th:text="#{nav.vehicles}">Vehicles</a>
+            <a href="#" id="register" class="nav-link" th:text="#{nav.register}">Register</a>
+            <a href="#" id="login" class="nav-link" th:text="#{nav.login}">Sign In</a>
             <a href="#" id="cart" class="nav-link nav-link--cart" aria-label="Shopping cart">
                 <span aria-hidden="true">🛒</span>
                 <span class="cart-count visually-hidden" id="cartCount">0</span>
             </a>
-            <a href="#" id="orders" class="nav-link">My Orders</a>
-            <a href="#" id="my_data" class="nav-link">My Account</a>
-            <a href="#" id="logout" class="nav-link">Sign Out</a>
-            <a href="/admin/startAdmin" class="nav-link nav-link--admin">Administration</a>
+            <a href="#" id="orders" class="nav-link" th:text="#{nav.orders}">My Orders</a>
+            <a href="#" id="my_data" class="nav-link" th:text="#{nav.account}">My Account</a>
+            <a href="#" id="logout" class="nav-link" th:text="#{nav.logout}">Sign Out</a>
+            <a href="/admin/startAdmin" class="nav-link nav-link--admin" th:text="#{nav.admin}">Administration</a>
         </nav>
+
+        <!-- Language Switcher -->
+        <div class="language-switcher" th:fragment="language-switcher">
+            <span class="language-label" th:text="#{language}">Language</span>
+            <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
+                <option value="en" th:selected="${#locale.language == 'en'}" th:text="#{language.en}">English</option>
+                <option value="es" th:selected="${#locale.language == 'es'}" th:text="#{language.es}">Español</option>
+                <option value="ru" th:selected="${#locale.language == 'ru'}" th:text="#{language.ru}">Русский</option>
+            </select>
+        </div>
     </div>
 </header>
 
@@ -43,8 +101,8 @@
 
     <section class="hero-section" aria-labelledby="hero-title">
         <div class="hero-content">
-            <h1 id="hero-title" class="section-title">Find Your Next Car</h1>
-            <p class="section-subtitle">Browse our collection of quality vehicles. Filter by category, brand, or price range.</p>
+            <h1 id="hero-title" class="section-title" th:text="#{hero.title}">Find Your Next Car</h1>
+            <p class="section-subtitle" th:text="#{hero.subtitle}">Browse our collection of quality vehicles. Filter by category, brand, or price range.</p>
         </div>
     </section>
 
@@ -54,7 +112,7 @@
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
 
@@ -92,7 +150,7 @@
     }
 
     function showCars() {
-        $.getJSON("restCars/list")
+        $.getJSON("/api/cars/list")
             .done(function (json) {
                 console.log(json);
                 const html = Mustache.render(templateCars, json);
@@ -103,7 +161,7 @@
 
     function showDetails(id) {
         $.getJSON(
-            "restCars/get-car",
+            "/api/cars/get-car",
             {
                 id: id
             }
@@ -158,7 +216,7 @@
 
 
 function showCart() {
-    $.getJSON("/restCart/getProducts")
+    $.getJSON("/api/cart/getProducts")
         .done(function(cart) {
             if (!templateCart) {
                 $("#contenedor").html(
@@ -187,7 +245,7 @@ function addToCart(id, quantity) {
     }
 
     $.ajax({
-        url: "/restCart/addProduct",
+        url: "/api/cart/addProduct",
         method: "POST",
         data: {
             id: id,
@@ -211,7 +269,7 @@ function updateCartQuantity(id) {
         return;
     }
 
-    $.get("/restCart/updateQuantity", {
+    $.post("/api/cart/updateQuantity", {
         id: id,
         quantity: quantity
     }).done(function() {
@@ -222,7 +280,7 @@ function updateCartQuantity(id) {
 }
 
 function removeFromCart(id) {
-    $.get("/restCart/removeProduct", {
+    $.post("/api/cart/removeProduct", {
         id: id
     }).done(function() {
         showCart();
@@ -233,15 +291,16 @@ function removeFromCart(id) {
 
 
 function showLogin() {
+    const msg = window.messages.login;
     const html = `
         <section class="card" style="max-width: 420px; margin: 0 auto;">
             <div class="card-header text-center">
-                <h2>Sign In</h2>
+                <h2>${msg.title}</h2>
             </div>
             <div class="card-body">
                 <form id="loginForm">
                     <div class="form-field">
-                        <label for="loginEmail">Email:</label>
+                        <label for="loginEmail">${msg.email}:</label>
                         <input
                             type="email"
                             id="loginEmail"
@@ -252,7 +311,7 @@ function showLogin() {
                     </div>
 
                     <div class="form-field">
-                        <label for="loginPass">Password:</label>
+                        <label for="loginPass">${msg.password}:</label>
                         <input
                             type="password"
                             id="loginPass"
@@ -262,7 +321,7 @@ function showLogin() {
                         >
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Sign In</button>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">${msg.submit}</button>
                     <p id="loginMessage" class="text-center text-muted" style="margin-top: 12px; font-size: 13px;"></p>
                 </form>
             </div>
@@ -274,9 +333,10 @@ function showLogin() {
 
 $(document).on("submit", "#loginForm", function (event) {
     event.preventDefault();
+    const msg = window.messages.login;
 
     $.ajax({
-        url: "/restUsuarios/identificarUsuario",
+        url: "/api/users/login",
         method: "POST",
         data: {
             email: $("#loginEmail").val(),
@@ -284,40 +344,41 @@ $(document).on("submit", "#loginForm", function (event) {
         }
     }).done(function (response) {
         if (response.startsWith("Login successful.")) {
-            $("#loginMessage").text(response).removeClass("text-muted").addClass("text-success");
+            $("#loginMessage").text(msg.messageSuccess).removeClass("text-muted").addClass("text-success");
             showCars();
         } else {
             $("#loginMessage").text(response).removeClass("text-muted").addClass("text-error");
         }
     }).fail(function () {
-        $("#loginMessage").text("Could not sign in.").removeClass("text-muted").addClass("text-error");
+        $("#loginMessage").text(msg.messageError).removeClass("text-muted").addClass("text-error");
     });
 });
 
     $("#my_data").click(function (event) {
     event.preventDefault();
 
-    $.getJSON("/restUsuarios/currentUser")
+    $.getJSON("/api/users/current")
         .done(function (user) {
             if (!user.authenticated) {
                 showLogin();
                 return;
             }
 
+            const msg = window.messages.account;
             const html = `
                 <section class="card" style="max-width: 500px; margin: 0 auto;">
                     <div class="card-header">
-                        <h2>My Account</h2>
+                        <h2>${msg.title}</h2>
                     </div>
                     <div class="card-body">
                         <dl class="summary-list">
-                            <dt>Name</dt>
+                            <dt>${msg.name}</dt>
                             <dd>${user.firstName} ${user.lastName}</dd>
 
-                            <dt>Email</dt>
+                            <dt>${msg.email}</dt>
                             <dd>${user.email}</dd>
 
-                            <dt>Phone</dt>
+                            <dt>${msg.phone}</dt>
                             <dd>${user.phone}</dd>
                         </dl>
                     </div>
@@ -349,6 +410,90 @@ function updateCartCount() {
 $(document).ready(function() {
     updateCartCount();
 });
+
+// Language switcher function
+function changeLanguage(lang) {
+    const currentUrl = window.location.href;
+    const url = new URL(currentUrl);
+    url.searchParams.set('lang', lang);
+    window.location.href = url.toString();
+}
+
+// i18n translation function for Mustache-rendered templates
+function translateRenderedContent(container) {
+    if (!container) container = document.body;
+    if (!window.messages) return;
+
+    const allMessages = {
+        ...window.messages.car,
+        ...window.messages.cart,
+        ...window.messages.home,
+        ...window.messages.checkout,
+        ...window.messages.register
+    };
+
+    // Helper to convert snake_case to camelCase
+    function toCamelCase(str) {
+        return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    }
+
+    // Helper to strip prefix (e.g., "car.", "cart.", "home.") from key
+    function stripPrefix(key) {
+        return key.replace(/^(car|cart|home|checkout|register)\./, '');
+    }
+
+    container.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        // Try exact key first, then camelCase version, then stripped prefix version
+        let translation = allMessages[key] || allMessages[toCamelCase(key)];
+        if (!translation) {
+            const strippedKey = stripPrefix(key);
+            translation = allMessages[strippedKey] || allMessages[toCamelCase(strippedKey)];
+        }
+        if (translation) {
+            if (el.tagName === 'INPUT' && (el.type === 'submit' || el.type === 'button')) {
+                el.value = translation;
+            } else if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                el.placeholder = translation;
+            } else {
+                // Preserve child elements (like <span> in buttons)
+                const childNodes = Array.from(el.childNodes);
+                const textNodes = childNodes.filter(n => n.nodeType === Node.TEXT_NODE);
+                if (textNodes.length > 0) {
+                    textNodes[0].textContent = translation;
+                } else {
+                    el.textContent = translation;
+                }
+            }
+        }
+    });
+}
+
+// Wrapper functions that translate after rendering
+const originalShowCars = showCars;
+showCars = function() {
+    originalShowCars();
+    // Translate after a brief delay to allow Mustache rendering
+    setTimeout(() => translateRenderedContent(document.getElementById('contenedor')), 0);
+};
+
+const originalShowDetails = showDetails;
+showDetails = function(id) {
+    originalShowDetails(id);
+    setTimeout(() => translateRenderedContent(document.getElementById('contenedor')), 0);
+};
+
+const originalShowCart = showCart;
+showCart = function() {
+    originalShowCart();
+    setTimeout(() => translateRenderedContent(document.getElementById('contenedor')), 0);
+};
+
+const originalShowHome = showHome;
+showHome = function() {
+    originalShowHome();
+    setTimeout(() => translateRenderedContent(document.getElementById('contenedor')), 0);
+};
 
 </script>
 

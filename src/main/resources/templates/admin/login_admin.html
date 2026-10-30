@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
+    <title th:text="#{admin.login.title}">Admin Login</title>
 
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
@@ -12,39 +12,49 @@
 
 <div class="login-card">
 
+    <!-- Language Switcher -->
+    <div class="language-switcher" style="justify-content: flex-end; margin-bottom: 16px;">
+        <span class="language-label" th:text="#{language}">Language</span>
+        <select id="languageSelect" class="language-select" onchange="changeLanguage(this.value)">
+            <option value="en" th:selected="${#locale.language == 'en'}" th:text="#{language.en}">English</option>
+            <option value="es" th:selected="${#locale.language == 'es'}" th:text="#{language.es}">Español</option>
+            <option value="ru" th:selected="${#locale.language == 'ru'}" th:text="#{language.ru}">Русский</option>
+        </select>
+    </div>
+
     <div class="login-icon">🔐</div>
 
-    <h1>Admin Login</h1>
+    <h1 th:text="#{admin.login.title}">Admin Login</h1>
 
-    <p>
-        Enter the administrator password to access the control panel.
-    </p>
+    <p th:text="#{admin.login.subtitle}">Enter the administrator password to access the control panel.</p>
 
     <form th:action="@{/admin/manageCars}"
           method="get">
 
         <div class="form-group">
 
-            <label for="password">
-                Password
-            </label>
+            <label for="password" th:text="#{admin.login.password}">Password</label>
 
             <input id="password"
                    type="password"
                    name="pass-login-admin"
+                   th:placeholder="#{admin.login.placeholder}"
                    placeholder="Enter password"
                    required>
 
         </div>
 
         <button type="submit"
-                class="button button-primary button-full">
+                class="button button-primary button-full"
+                th:text="#{admin.login.submit}">
             Sign In
         </button>
 
     </form>
 
 </div>
+
+<div th:insert="fragments/general.html :: language-script"></div>
 
 </body>
 </html>

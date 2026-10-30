@@ -95,8 +95,8 @@
         <p class="car-details-price">€{{price}}</p>
 
         <div class="car-details-meta">
-            <p><strong>Brand:</strong> {{brand}}</p>
-            <p><strong>Category:</strong> {{category}}</p>
+            <p><strong data-i18n="car.brand">Brand:</strong> {{brand}}</p>
+            <p><strong data-i18n="car.category">Category:</strong> {{category}}</p>
         </div>
     </div>
 
@@ -106,7 +106,7 @@
 
     <div class="car-details-actions">
         <div class="quantity-control" style="flex: 1; max-width: 200px;">
-            <label for="detailQuantity">Quantity:</label>
+            <label for="detailQuantity" data-i18n="car.quantity">Quantity:</label>
             <input id="detailQuantity"
                    type="number"
                    value="1"
@@ -117,11 +117,12 @@
         <button type="button"
                 class="btn btn-primary"
                 onclick="addToCart({{id}}, document.getElementById('detailQuantity').value)"
-                style="padding: 12px 24px; font-size: 15px;">
+                style="padding: 12px 24px; font-size: 15px;"
+                data-i18n="car.add_to_cart">
             <span>＋</span> Add to Cart
         </button>
 
-        <a href="#" onclick="showCars(); return false;" class="btn btn-secondary" style="padding: 12px 24px; font-size: 15px;">
+        <a href="#" onclick="showCars(); return false;" class="btn btn-secondary" style="padding: 12px 24px; font-size: 15px;" data-i18n="car.back_to_listings">
             ← Back to listings
         </a>
     </div>

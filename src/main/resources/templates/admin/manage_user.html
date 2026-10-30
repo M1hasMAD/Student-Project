@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create User</title>
+    <title th:text="#{admin.register_user.title} + ' | ' + #{app.name}">Create User</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
@@ -13,16 +13,16 @@
 <main class="container section">
     <div class="page-header flex flex-between gap-md">
         <div>
-            <h1 class="section-title">Create User</h1>
-            <p class="section-subtitle">Add a new user to the system.</p>
+            <h1 class="section-title" th:text="#{admin.register_user.title}">Create User</h1>
+            <p class="section-subtitle" th:text="#{admin.register_user.subtitle}">Add a new user to the system.</p>
         </div>
-        <a th:href="@{/admin/manageUsers}" class="btn btn-secondary">← Back to Users</a>
+        <a th:href="@{/admin/manageUsers}" class="btn btn-secondary" th:text="#{admin.register_user.cancel}">← Back to Users</a>
     </div>
 
     <div class="card" style="max-width: 600px;">
         <div class="card-header">
-            <h2>User Information</h2>
-            <p class="text-muted">Complete all fields to create a user.</p>
+            <h2 th:text="#{admin.register_user.email_label}">User Information</h2>
+            <p class="text-muted" th:text="#{admin.register_user.subtitle}">Complete all fields to create a user.</p>
         </div>
         <div class="card-body">
             <form th:action="@{/admin/saveUser}"
@@ -31,7 +31,7 @@
                   class="form-field">
 
                 <div class="form-field">
-                    <label for="email">Email</label>
+                    <label for="email" th:text="#{admin.register_user.email_label}">Email</label>
                     <input type="email" id="email"
                            th:field="*{email}"
                            placeholder="user@example.com" required>
@@ -45,27 +45,27 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="firstName">First Name</label>
+                    <label for="firstName" th:text="#{admin.register_user.first_name_label}">First Name</label>
                     <input type="text" id="firstName"
                            th:field="*{firstName}" required>
                 </div>
 
                 <div class="form-field">
-                    <label for="lastName">Last Name</label>
+                    <label for="lastName" th:text="#{admin.register_user.last_name_label}">Last Name</label>
                     <input type="text" id="lastName"
                            th:field="*{lastName}" required>
                 </div>
 
                 <div class="form-field">
-                    <label for="phone">Phone</label>
+                    <label for="phone" th:text="#{admin.register_user.phone_label}">Phone</label>
                     <input type="tel" id="phone"
                            th:field="*{phone}"
                            placeholder="+34 600 000 000" required>
                 </div>
 
                 <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
-                    <a th:href="@{/admin/manageUsers}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Save User</button>
+                    <a th:href="@{/admin/manageUsers}" class="btn btn-secondary" th:text="#{admin.register_user.cancel}">Cancel</a>
+                    <button type="submit" class="btn btn-primary" th:text="#{admin.register_user.save}">Save User</button>
                 </div>
             </form>
         </div>
@@ -74,9 +74,11 @@
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
+
+<div th:insert="fragments/general.html :: language-script"></div>
 
 </body>
 </html>

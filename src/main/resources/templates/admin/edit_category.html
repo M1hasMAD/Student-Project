@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Category</title>
+    <title th:text="#{admin.edit_category.title} + ' | ' + #{app.name}">Edit Category</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
 </head>
 <body>
@@ -13,16 +13,16 @@
 <main class="container section">
     <div class="page-header flex flex-between gap-md">
         <div>
-            <h1 class="section-title">Edit Category</h1>
-            <p class="section-subtitle">Update the information for this category.</p>
+            <h1 class="section-title" th:text="#{admin.edit_category.title}">Edit Category</h1>
+            <p class="section-subtitle" th:text="#{admin.edit_category.subtitle}">Update the information for this category.</p>
         </div>
-        <a th:href="@{/admin/manageCategories}" class="btn btn-secondary">← Back to Categories</a>
+        <a th:href="@{/admin/manageCategories}" class="btn btn-secondary" th:text="#{admin.edit_category.cancel}">← Back to Categories</a>
     </div>
 
     <div class="card" style="max-width: 600px;">
         <div class="card-header">
-            <h2>Category Information</h2>
-            <p class="text-muted">Make your changes and save them when you're done.</p>
+            <h2 th:text="#{admin.edit_category.name_label}">Category Information</h2>
+            <p class="text-muted" th:text="#{admin.edit_category.subtitle}">Make your changes and save them when you're done.</p>
         </div>
         <div class="card-body">
             <form th:action="@{/admin/saveChangesOfCategory}"
@@ -33,7 +33,7 @@
                 <input type="hidden" th:field="*{id}">
 
                 <div class="form-field">
-                    <label for="name">Category Name</label>
+                    <label for="name" th:text="#{admin.edit_category.name_label}">Category Name</label>
                     <input type="text"
                            id="name"
                            th:field="*{name}"
@@ -43,7 +43,7 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="description">Description</label>
+                    <label for="description" th:text="#{admin.edit_category.description_label}">Description</label>
                     <textarea id="description"
                               th:field="*{description}"
                               rows="5"
@@ -53,8 +53,8 @@
                 </div>
 
                 <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">
-                    <a th:href="@{/admin/manageCategories}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a th:href="@{/admin/manageCategories}" class="btn btn-secondary" th:text="#{admin.edit_category.cancel}">Cancel</a>
+                    <button type="submit" class="btn btn-primary" th:text="#{admin.edit_category.save}">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -63,9 +63,11 @@
 
 <footer class="site-footer" role="contentinfo">
     <div class="container">
-        <p>&copy; 2025 Car Store. All rights reserved.</p>
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
     </div>
 </footer>
+
+<div th:insert="fragments/general.html :: language-script"></div>
 
 </body>
 </html>
