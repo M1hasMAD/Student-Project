@@ -19,6 +19,32 @@
         <a th:href="@{/admin/registerCar}" class="btn btn-primary" th:text="#{admin.manage_cars.add_new}">+ Add New Car</a>
     </div>
 
+    <!-- Search and Filters -->
+    <div class="card" style="margin-bottom: 24px; padding: 16px;">
+        <form method="get" class="flex flex-wrap gap-md items-end">
+            <div class="form-field" style="flex: 1; min-width: 250px;">
+                <label for="search" class="form-label" th:text="#{admin.common.search}">Search</label>
+                <input type="text"
+                       id="search"
+                       name="search"
+                       class="form-input"
+                       th:value="${search}"
+                       placeholder="#{admin.manage_cars.search_placeholder}">
+            </div>
+            <div class="form-field">
+                <label for="size" class="form-label" th:text="#{admin.common.per_page}">Per page</label>
+                <select id="size" name="size" class="form-select" onchange="this.form.submit()">
+                    <option value="5" th:selected="${pageSize == 5}">5</option>
+                    <option value="10" th:selected="${pageSize == 10}">10</option>
+                    <option value="20" th:selected="${pageSize == 20}">20</option>
+                    <option value="50" th:selected="${pageSize == 50}">50</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{admin.common.search}">Search</button>
+            <a th:href="@{/admin/manageCars}" class="btn btn-secondary" th:text="#{admin.common.clear}">Clear</a>
+        </form>
+    </div>
+
     <div class="grid grid-4 gap-lg" th:if="${cars != null and not #lists.isEmpty(cars)}">
         <div class="car-card" th:each="car : ${cars}">
             <div class="car-image-container">
@@ -34,8 +60,16 @@
                 <p class="car-card-info"><strong th:text="#{admin.manage_cars.category}">Category:</strong> <span th:text="${car.category?.name}"></span></p>
                 <p class="car-card-info"><strong th:text="#{admin.manage_cars.description}">Description:</strong> <span th:text="${car.description}"></span></p>
                 <div class="car-card-actions">
-                    <a th:href="@{/admin/editCar(id=${car.id})}" class="btn btn-secondary" style="width: 100%; text-align: center;" th:text="#{admin.common.edit}">Edit</a>
-                    <a th:href="@{/admin/deleteCar(id=${car.id})}" class="btn btn-ghost" style="width: 100%; text-align: center; color: var(--color-error);" onclick="return confirm('#{admin.common.confirm_delete}')" th:text="#{admin.common.delete}">Delete</a>
+                    <a th:href="@{/admin/editCar(id=${car.id}, page=${currentPage}, size=${pageSize}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}" class="btn btn-secondary" style="width: 100%; text-align: center;" th:text="#{admin.common.edit}">Edit</a>
+                    <form method="post" th:action="@{/admin/deleteCar}" style="width: 100%;" onsubmit="return confirm('#{admin.common.confirm_delete}')">
+                        <input type="hidden" name="id" th:value="${car.id}">
+                        <input type="hidden" name="page" th:value="${currentPage}">
+                        <input type="hidden" name="size" th:value="${pageSize}">
+                        <input type="hidden" name="search" th:value="${search}">
+                        <input type="hidden" name="sortBy" th:value="${sortBy}">
+                        <input type="hidden" name="sortDir" th:value="${sortDir}">
+                        <button type="submit" class="btn btn-ghost" style="width: 100%; text-align: center; color: var(--color-error);" th:text="#{admin.common.delete}">Delete</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -44,6 +78,46 @@
     <div class="card text-center" th:if="${cars == null or #lists.isEmpty(cars)}" style="padding: 60px 20px;">
         <p style="font-size: 18px; color: var(--color-text-muted); margin: 0 0 24px;" th:text="#{admin.manage_cars.no_cars}">No cars found.</p>
         <a th:href="@{/admin/registerCar}" class="btn btn-primary" th:text="#{admin.manage_cars.add_first_car}">+ Add Your First Car</a>
+    </div>
+
+    <!-- Pagination -->
+    <div th:if="${totalPages > 1}" class="pagination-container" style="margin-top: 24px;">
+        <nav aria-label="Pagination" class="flex flex-center gap-sm flex-wrap">
+            <span class="pagination-info" th:text="#{admin.pagination.showing} + ' ' + ${currentPage * pageSize + 1} + ' - ' + ${(currentPage * pageSize + pageSize) > totalElements ? totalElements : (currentPage * pageSize + pageSize)} + ' ' + #{admin.pagination.of} + ' ' + ${totalElements} + ' ' + #{admin.pagination.results}">
+                Showing 1 - 10 of 50 results
+            </span>
+
+            <a th:if="${currentPage > 0}"
+               th:href="@{/admin/manageCars(page=0, size=${pageSize}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}"
+               class="btn btn-secondary btn-sm"
+               th:text="#{admin.pagination.first}">&laquo; First</a>
+
+            <a th:if="${currentPage > 0}"
+               th:href="@{/admin/manageCars(page=${currentPage - 1}, size=${pageSize}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}"
+               class="btn btn-secondary btn-sm"
+               th:text="#{admin.pagination.previous}">&lsaquo; Previous</a>
+
+            <span class="pagination-pages flex gap-xs">
+                <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
+                      class="pagination-page"
+                      th:classappend="${pageNum == currentPage} ? 'active' : ''">
+                    <a th:if="${pageNum != currentPage}"
+                       th:href="@{/admin/manageCars(page=${pageNum}, size=${pageSize}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}"
+                       th:text="${pageNum + 1}">1</a>
+                    <span th:if="${pageNum == currentPage}" th:text="${pageNum + 1}" class="current">1</span>
+                </span>
+            </span>
+
+            <a th:if="${currentPage < totalPages - 1}"
+               th:href="@{/admin/manageCars(page=${currentPage + 1}, size=${pageSize}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}"
+               class="btn btn-secondary btn-sm"
+               th:text="#{admin.pagination.next}">Next &rsaquo;</a>
+
+            <a th:if="${currentPage < totalPages - 1}"
+               th:href="@{/admin/manageCars(page=${totalPages - 1}, size=${pageSize}, search=${search}, sortBy=${sortBy}, sortDir=${sortDir})}"
+               class="btn btn-secondary btn-sm"
+               th:text="#{admin.pagination.last}">Last &raquo;</a>
+        </nav>
     </div>
 </main>
 

@@ -5,6 +5,7 @@ import com.mikhail.shop.cars.interfaces.ServiceCars;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,8 +28,41 @@ public class ControllerCars {
     }
 
     @GetMapping("/manageCars")
-    public String manageCars(Model model) {
-        model.addAttribute("cars", serviceCars.getCars());
+    public String manageCars(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir,
+            Model model) {
+
+        Page<Car> carPage;
+
+        if (search != null && !search.trim().isEmpty()) {
+            carPage = serviceCars.searchCars(search.trim(), page, size, sortBy, sortDir);
+            model.addAttribute("search", search.trim());
+        } else {
+            carPage = serviceCars.getCars(page, size, sortBy, sortDir);
+        }
+
+        int totalPages = carPage.getTotalPages();
+        int currentPage = page;
+
+        // Calculate pagination range for display (show 5 pages centered on current)
+        int startPage = Math.max(0, currentPage - 2);
+        int endPage = Math.min(totalPages - 1, currentPage + 2);
+
+        model.addAttribute("cars", carPage.getContent());
+        model.addAttribute("currentPage", currentPage);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalElements", carPage.getTotalElements());
+        model.addAttribute("pageSize", size);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("sortDir", sortDir);
+        model.addAttribute("search", search != null ? search : "");
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
         return "admin/manage_products";
     }
 
@@ -106,13 +140,19 @@ public class ControllerCars {
     }
 
     @PostMapping("/deleteCar")
-    public String deleteCar(@RequestParam("id") Long id,
-                            Model model) {
+    public String deleteCar(
+            @RequestParam("id") Long id,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "search", required = false) String search,
+            @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "desc") String sortDir) {
 
         log.info("Received id to delete: {}", id);
 
         serviceCars.deleteCarById(id);
 
-        return manageCars(model);
+        return String.format("redirect:/admin/manageCars?page=%d&size=%d&search=%s&sortBy=%s&sortDir=%s",
+                page, size, search != null ? search : "", sortBy, sortDir);
     }
 }

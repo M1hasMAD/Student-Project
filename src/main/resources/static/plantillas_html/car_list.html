@@ -1,5 +1,4 @@
-{{#.}}
-
+{{#cars}}
 <div class="car-card">
     <img class="car-card-image"
          src="/images/get_thumbnail?id={{id}}"
@@ -38,5 +37,10 @@
         </div>
     </div>
 </div>
+{{/cars}}
 
-{{/.}}
+{{^cars}}
+<div class="car-card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+    <p data-i18n="admin.manage_cars.no_cars">No cars found.</p>
+</div>
+{{/cars}}

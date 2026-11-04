@@ -11,10 +11,20 @@ import com.mikhail.shop.cars.repository.CategoryRepository;
 import com.mikhail.shop.cars.repository.CarImageRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.AliasToEntityMapResultTransformer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,6 +36,7 @@ import javax.imageio.stream.ImageInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -88,6 +99,55 @@ public class ServiceCarsImplJPA implements ServiceCars {
     @Transactional(readOnly = true)
     public List<Car> getCars() {
         return carRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Car> getCars(int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") ?
+            Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return carRepository.findAll(pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Car> searchCars(String search, int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") ?
+            Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return carRepository.findBySearchTerm(search, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Car> searchCarsList(String search, int page, int size, String sortBy, String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("desc") ?
+            Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return carRepository.findBySearchTermList(search, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> getJSONCarsPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Page<Car> carPage = carRepository.findAll(pageable);
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Car car : carPage.getContent()) {
+            Map<String, Object> carMap = new LinkedHashMap<>();
+            carMap.put("id", car.getId());
+            carMap.put("title", car.getTitle());
+            carMap.put("price", car.getPrice());
+            carMap.put("brand", car.getBrand());
+            carMap.put("description", car.getDescription());
+            carMap.put("coverImage", car.getCoverImage());
+            carMap.put("thumbnailImage", car.getThumbnailImage());
+            carMap.put("category", car.getCategory() != null ? car.getCategory().getName() : "");
+            result.add(carMap);
+        }
+        return result;
     }
 
     @Override

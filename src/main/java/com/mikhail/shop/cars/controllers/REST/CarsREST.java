@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,8 +28,56 @@ public class CarsREST {
     }
 
     @GetMapping("/list")
-    public List<Map<String, Object>> getList() {
-        return serviceCars.getJSONCars();
+    public Map<String, Object> getList(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "12") int size,
+            @RequestParam(value = "search", required = false) String search) {
+
+        List<Map<String, Object>> cars;
+        long totalElements;
+        int totalPages;
+
+        if (search != null && !search.trim().isEmpty()) {
+            // For search, we use the search method which returns Page<Car>
+            // We need to convert to the JSON format
+            var carPage = serviceCars.searchCars(search.trim(), page, size, "id", "desc");
+            cars = convertToJsonList(carPage.getContent());
+            totalElements = carPage.getTotalElements();
+            totalPages = carPage.getTotalPages();
+        } else {
+            cars = serviceCars.getJSONCarsPaginated(page, size);
+            // Get total count for pagination
+            var allCars = serviceCars.getCars(0, 1, "id", "desc");
+            totalElements = allCars.getTotalElements();
+            totalPages = allCars.getTotalPages();
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("cars", cars);
+        response.put("currentPage", page);
+        response.put("totalPages", totalPages);
+        response.put("totalElements", totalElements);
+        response.put("pageSize", size);
+        response.put("search", search != null ? search : "");
+
+        return response;
+    }
+
+    private List<Map<String, Object>> convertToJsonList(List<com.mikhail.shop.cars.model.Car> cars) {
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (var car : cars) {
+            Map<String, Object> carMap = new HashMap<>();
+            carMap.put("id", car.getId());
+            carMap.put("title", car.getTitle());
+            carMap.put("price", car.getPrice());
+            carMap.put("brand", car.getBrand());
+            carMap.put("description", car.getDescription());
+            carMap.put("coverImage", car.getCoverImage());
+            carMap.put("thumbnailImage", car.getThumbnailImage());
+            carMap.put("category", car.getCategory() != null ? car.getCategory().getName() : "");
+            result.add(carMap);
+        }
+        return result;
     }
 
     @GetMapping("/get-car")

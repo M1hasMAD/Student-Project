@@ -55,6 +55,22 @@
                 quantity: [[#{car.quantity}]],
                 addToCart: [[#{car.add_to_cart}]],
                 backToListings: [[#{car.back_to_listings}]]
+            },
+            pagination: {
+                showing: [[#{pagination.showing}]],
+                of: [[#{pagination.of}]],
+                results: [[#{pagination.results}]],
+                previous: [[#{pagination.previous}]],
+                next: [[#{pagination.next}]],
+                first: [[#{pagination.first}]],
+                last: [[#{pagination.last}]],
+                page: [[#{pagination.page}]]
+            },
+            search: {
+                placeholder: [[#{search.placeholder}]],
+                button: [[#{search.button}]],
+                clear: [[#{search.clear}]],
+                per_page: [[#{search.per_page}]]
             }
         };
         /*]]>*/
@@ -106,7 +122,41 @@
         </div>
     </section>
 
+    <!-- Search and Filters for car listing -->
+    <div id="cars-toolbar" class="cars-toolbar" style="display: none; margin-bottom: 24px;">
+        <div class="card" style="padding: 16px;">
+            <form id="searchForm" class="flex flex-wrap gap-md items-end" onsubmit="event.preventDefault(); currentPage = 0; showCars();">
+                <div class="form-field" style="flex: 1; min-width: 250px;">
+                    <label for="searchInput" class="form-label" th:text="#{search.placeholder}">Search cars...</label>
+                    <input type="text"
+                           id="searchInput"
+                           name="search"
+                           class="form-input"
+                           placeholder="#{search.placeholder}">
+                </div>
+                <div class="form-field">
+                    <label for="pageSizeSelect" class="form-label" th:text="#{search.per_page}">Per page</label>
+                    <select id="pageSizeSelect" name="size" class="form-select" onchange="currentPage = 0; showCars();">
+                        <option value="6">6</option>
+                        <option value="12" selected>12</option>
+                        <option value="24">24</option>
+                        <option value="48">48</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" th:text="#{search.button}">Search</button>
+                <button type="button" class="btn btn-secondary" onclick="clearSearch()" th:text="#{search.clear}">Clear</button>
+            </form>
+        </div>
+    </div>
+
     <div id="contenedor" class="content-area"></div>
+
+    <!-- Pagination for car listing -->
+    <div id="cars-pagination" class="pagination-container" style="display: none; margin-top: 24px;">
+        <nav aria-label="Pagination" class="flex flex-center gap-sm flex-wrap" id="paginationNav">
+            <!-- Pagination will be rendered here by JavaScript -->
+        </nav>
+    </div>
 
 </main>
 
@@ -117,6 +167,13 @@
 </footer>
 
 <script>
+    // State for pagination
+    let currentPage = 0;
+    let currentPageSize = 12;
+    let currentSearch = '';
+    let totalPages = 0;
+    let totalElements = 0;
+
     // Template storage
     let templateHome;
     let templateCars;
@@ -147,15 +204,109 @@
 
     function showHome() {
         $("#contenedor").html(templateHome);
+        $("#cars-toolbar").hide();
+        $("#cars-pagination").hide();
     }
 
     function showCars() {
-        $.getJSON("/api/cars/list")
-            .done(function (json) {
-                console.log(json);
-                const html = Mustache.render(templateCars, json);
+        const search = $("#searchInput").val().trim();
+        const size = $("#pageSizeSelect").val();
+
+        currentSearch = search;
+        currentPageSize = parseInt(size);
+
+        $("#cars-toolbar").show();
+
+        $.getJSON("/api/cars/list", {
+            page: currentPage,
+            size: currentPageSize,
+            search: currentSearch
+        })
+            .done(function (response) {
+                console.log(response);
+
+                // Render cars
+                const html = Mustache.render(templateCars, response);
                 $("#contenedor").html(html);
+
+                // Update pagination state
+                totalPages = response.totalPages || 0;
+                totalElements = response.totalElements || 0;
+                currentPage = response.currentPage || 0;
+
+                // Render pagination
+                renderPagination(response);
+
+                // Show/hide pagination
+                if (totalPages > 1) {
+                    $("#cars-pagination").show();
+                } else {
+                    $("#cars-pagination").hide();
+                }
             });
+    }
+
+    function renderPagination(response) {
+        const currentPage = response.currentPage || 0;
+        const totalPages = response.totalPages || 0;
+        const totalElements = response.totalElements || 0;
+        const pageSize = response.pageSize || 12;
+        const search = response.search || '';
+
+        if (totalPages <= 1) {
+            $("#paginationNav").empty();
+            return;
+        }
+
+        const start = currentPage * pageSize + 1;
+        const end = Math.min((currentPage + 1) * pageSize, totalElements);
+
+        let html = '';
+
+        // Showing X-Y of Z results
+        html += `<span class="pagination-info">${window.messages.pagination?.showing || 'Showing'} ${start} - ${end} ${window.messages.pagination?.of || 'of'} ${totalElements} ${window.messages.pagination?.results || 'results'}</span>`;
+
+        // First page
+        if (currentPage > 0) {
+            html += `<button class="btn btn-secondary btn-sm" onclick="goToPage(0)">${window.messages.pagination?.first || '&laquo; First'}</button>`;
+            html += `<button class="btn btn-secondary btn-sm" onclick="goToPage(${currentPage - 1})">${window.messages.pagination?.previous || '&lsaquo; Previous'}</button>`;
+        }
+
+        // Page numbers
+        const startPage = Math.max(0, currentPage - 2);
+        const endPage = Math.min(totalPages - 1, currentPage + 2);
+
+        html += '<span class="pagination-pages flex gap-xs">';
+        for (let i = startPage; i <= endPage; i++) {
+            if (i === currentPage) {
+                html += `<span class="pagination-page current">${i + 1}</span>`;
+            } else {
+                html += `<button class="pagination-page" onclick="goToPage(${i})">${i + 1}</button>`;
+            }
+        }
+        html += '</span>';
+
+        // Last page
+        if (currentPage < totalPages - 1) {
+            html += `<button class="btn btn-secondary btn-sm" onclick="goToPage(${currentPage + 1})">${window.messages.pagination?.next || 'Next &rsaquo;'}</button>`;
+            html += `<button class="btn btn-secondary btn-sm" onclick="goToPage(${totalPages - 1})">${window.messages.pagination?.last || 'Last &raquo;'}</button>`;
+        }
+
+        $("#paginationNav").html(html);
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        showCars();
+        // Scroll to top of car listing
+        document.getElementById('contenedor').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function clearSearch() {
+        $("#searchInput").val('');
+        currentSearch = '';
+        currentPage = 0;
+        showCars();
     }
 
 
@@ -170,6 +321,8 @@
             console.log(json);
             const html = Mustache.render(templateCarDetails, json);
             $("#contenedor").html(html);
+            $("#cars-toolbar").hide();
+            $("#cars-pagination").hide();
         });
     }
 
@@ -180,6 +333,7 @@
 
     $("#cars").click(function (event) {
         event.preventDefault();
+        currentPage = 0;
         showCars();
     });
 
@@ -228,6 +382,8 @@ function showCart() {
             $("#contenedor").html(
                 Mustache.render(templateCart, cart)
             );
+            $("#cars-toolbar").hide();
+            $("#cars-pagination").hide();
         })
         .fail(function() {
             $("#contenedor").html(
@@ -329,6 +485,8 @@ function showLogin() {
     `;
 
     $("#contenedor").html(html);
+    $("#cars-toolbar").hide();
+    $("#cars-pagination").hide();
 }
 
 $(document).on("submit", "#loginForm", function (event) {
@@ -386,6 +544,8 @@ $(document).on("submit", "#loginForm", function (event) {
             `;
 
             $("#contenedor").html(html);
+            $("#cars-toolbar").hide();
+            $("#cars-pagination").hide();
         })
         .fail(function () {
             $("#contenedor").html(
@@ -429,7 +589,9 @@ function translateRenderedContent(container) {
         ...window.messages.cart,
         ...window.messages.home,
         ...window.messages.checkout,
-        ...window.messages.register
+        ...window.messages.register,
+        ...window.messages.pagination,
+        ...window.messages.search
     };
 
     // Helper to convert snake_case to camelCase
@@ -439,7 +601,7 @@ function translateRenderedContent(container) {
 
     // Helper to strip prefix (e.g., "car.", "cart.", "home.") from key
     function stripPrefix(key) {
-        return key.replace(/^(car|cart|home|checkout|register)\./, '');
+        return key.replace(/^(car|cart|home|checkout|register|pagination|search)\./, '');
     }
 
     container.querySelectorAll('[data-i18n]').forEach(el => {
@@ -475,6 +637,8 @@ showCars = function() {
     originalShowCars();
     // Translate after a brief delay to allow Mustache rendering
     setTimeout(() => translateRenderedContent(document.getElementById('contenedor')), 0);
+    setTimeout(() => translateRenderedContent(document.getElementById('cars-toolbar')), 0);
+    setTimeout(() => translateRenderedContent(document.getElementById('cars-pagination')), 0);
 };
 
 const originalShowDetails = showDetails;
