@@ -11,6 +11,8 @@
 
     <script th:src="@{/librerias_js/jquery.js}"></script>
     <script th:src="@{/librerias_js/mustache.js}"></script>
+    <!-- js-cookie from CDN for cookie management (learning purposes - in real apps, use secure server-side sessions) -->
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
     <!-- i18n messages for JavaScript templates -->
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -356,17 +358,156 @@
 
     $("#orders").click(function (event) {
         event.preventDefault();
-        alert("Orders functionality is not available yet.");
+        // Check if user is logged in before showing orders
+        if (isUserLoggedIn()) {
+            alert("Orders functionality is not available yet.");
+        } else {
+            showLogin();
+        }
     });
 
+
+    $("#my_data").click(function (event) {
+        event.preventDefault();
+        showAccount();
+    });
 
     $("#logout").click(function (event) {
         event.preventDefault();
-        alert("Logout functionality is not available yet.");
+        doLogout();
     });
+
+    /*
+     * Cookie-based Authentication Functions
+     * Learning exercise: In real apps, use secure server-side sessions with HttpOnly cookies
+     * Never store passwords in cookies!
+     */
+
+    // Cookie name for user identification
+    const USER_COOKIE_NAME = 'shop_user_id';
+    const USER_COOKIE_EXPIRY = 7; // days
+
+    // Check if user cookie exists
+    function getUserCookie() {
+        return Cookies.get(USER_COOKIE_NAME);
+    }
+
+    // Set user cookie (store user ID or email, NOT password)
+    function setUserCookie(userId) {
+        Cookies.set(USER_COOKIE_NAME, userId, { expires: USER_COOKIE_EXPIRY, path: '/' });
+    }
+
+    // Clear user cookie
+    function clearUserCookie() {
+        Cookies.remove(USER_COOKIE_NAME, { path: '/' });
+    }
+
+    // Check if user appears to be logged in (has cookie)
+    function isUserLoggedIn() {
+        return getUserCookie() !== undefined;
+    }
+
+    // Update UI based on authentication state
+    function updateAuthUI() {
+        const loggedIn = isUserLoggedIn();
+        const userEmail = getUserCookie();
+
+        if (loggedIn) {
+            // User is logged in - show logout, account, hide login/register
+            $("#login").hide();
+            $("#register").hide();
+            $("#logout").show();
+            $("#my_data").show();
+            $("#orders").show();
+            // Update logout link to show user email
+            const logoutText = (window.messages.nav?.logout || 'Sign Out') + ' (' + userEmail + ')';
+            $("#logout").text(logoutText);
+        } else {
+            // User is not logged in - show login/register, hide logout/account
+            $("#login").show();
+            $("#register").show();
+            $("#logout").hide();
+            $("#my_data").hide();
+            $("#orders").hide();
+        }
+    }
+
+    // Perform logout - call API and clear cookie
+    function doLogout() {
+        $.ajax({
+            url: "/api/users/logout",
+            method: "POST"
+        }).done(function(response) {
+            clearUserCookie();
+            updateAuthUI();
+            showCars(); // Return to car listing
+            alert("Logout successful.");
+        }).fail(function() {
+            // Even if API fails, clear local cookie
+            clearUserCookie();
+            updateAuthUI();
+            showCars();
+            alert("Logged out locally.");
+        });
+    }
+
+    // Show account page (requires authentication)
+    function showAccount() {
+        if (!isUserLoggedIn()) {
+            showLogin();
+            return;
+        }
+
+        $.getJSON("/api/users/current")
+            .done(function (user) {
+                if (!user.authenticated) {
+                    // Session expired but cookie exists - clear cookie and show login
+                    clearUserCookie();
+                    updateAuthUI();
+                    showLogin();
+                    return;
+                }
+
+                const msg = window.messages.account;
+                const html = `
+                    <section class="card" style="max-width: 500px; margin: 0 auto;">
+                        <div class="card-header">
+                            <h2>${msg.title}</h2>
+                        </div>
+                        <div class="card-body">
+                            <dl class="summary-list">
+                                <dt>${msg.name}</dt>
+                                <dd>${user.firstName} ${user.lastName}</dd>
+
+                                <dt>${msg.email}</dt>
+                                <dd>${user.email}</dd>
+
+                                <dt>${msg.phone}</dt>
+                                <dd>${user.phone}</dd>
+                            </dl>
+                        </div>
+                    </section>
+                `;
+
+                $("#contenedor").html(html);
+                $("#cars-toolbar").hide();
+                $("#cars-pagination").hide();
+            })
+            .fail(function () {
+                $("#contenedor").html(
+                    "<p>Could not load account information.</p>"
+                );
+            });
+    }
 
     // Load cars on initial page load
     showCars();
+
+    // Initialize auth UI on page load
+    $(document).ready(function() {
+        updateAuthUI();
+        updateCartCount();
+    });
 
 
 function showCart() {
@@ -492,16 +633,20 @@ function showLogin() {
 $(document).on("submit", "#loginForm", function (event) {
     event.preventDefault();
     const msg = window.messages.login;
+    const email = $("#loginEmail").val();
 
     $.ajax({
         url: "/api/users/login",
         method: "POST",
         data: {
-            email: $("#loginEmail").val(),
+            email: email,
             pass: $("#loginPass").val()
         }
     }).done(function (response) {
         if (response.startsWith("Login successful.")) {
+            // Set cookie with user email (learning: never store password in cookie!)
+            setUserCookie(email);
+            updateAuthUI();
             $("#loginMessage").text(msg.messageSuccess).removeClass("text-muted").addClass("text-success");
             showCars();
         } else {
@@ -510,48 +655,6 @@ $(document).on("submit", "#loginForm", function (event) {
     }).fail(function () {
         $("#loginMessage").text(msg.messageError).removeClass("text-muted").addClass("text-error");
     });
-});
-
-    $("#my_data").click(function (event) {
-    event.preventDefault();
-
-    $.getJSON("/api/users/current")
-        .done(function (user) {
-            if (!user.authenticated) {
-                showLogin();
-                return;
-            }
-
-            const msg = window.messages.account;
-            const html = `
-                <section class="card" style="max-width: 500px; margin: 0 auto;">
-                    <div class="card-header">
-                        <h2>${msg.title}</h2>
-                    </div>
-                    <div class="card-body">
-                        <dl class="summary-list">
-                            <dt>${msg.name}</dt>
-                            <dd>${user.firstName} ${user.lastName}</dd>
-
-                            <dt>${msg.email}</dt>
-                            <dd>${user.email}</dd>
-
-                            <dt>${msg.phone}</dt>
-                            <dd>${user.phone}</dd>
-                        </dl>
-                    </div>
-                </section>
-            `;
-
-            $("#contenedor").html(html);
-            $("#cars-toolbar").hide();
-            $("#cars-pagination").hide();
-        })
-        .fail(function () {
-            $("#contenedor").html(
-                "<p>Could not load account information.</p>"
-            );
-        });
 });
 
 function showCheckout() {
@@ -566,8 +669,9 @@ function updateCartCount() {
         });
 }
 
-// Update cart count on page load
+// Update cart count and auth UI on page load
 $(document).ready(function() {
+    updateAuthUI();
     updateCartCount();
 });
 

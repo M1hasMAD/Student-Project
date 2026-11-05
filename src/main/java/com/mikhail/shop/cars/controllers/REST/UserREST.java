@@ -81,6 +81,13 @@ public class UserREST {
         return result;
     }
 
+    @PostMapping("/logout")
+    public String logoutUser(jakarta.servlet.http.HttpServletRequest request) {
+        request.getSession().removeAttribute("user_identified");
+        request.getSession().invalidate();
+        return "Logout successful.";
+    }
+
     public record RegisterRequest(
             @Email @NotBlank String email,
             @NotBlank String password,

@@ -476,8 +476,17 @@
 </footer>
 
 <script th:src="@{/librerias_js/jquery.js}"></script>
+    <!-- js-cookie from CDN for cookie management (learning purposes - in real apps, use secure server-side sessions) -->
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 
-<script>
+    <script>
+        // Cookie name for user identification (must match index.html)
+        const USER_COOKIE_NAME = 'shop_user_id';
+        const USER_COOKIE_EXPIRY = 7; // days
+
+        function setUserCookie(userId) {
+            Cookies.set(USER_COOKIE_NAME, userId, { expires: USER_COOKIE_EXPIRY, path: '/' });
+        }
     function changeLanguage(lang) {
         const currentUrl = window.location.href;
         const url = new URL(currentUrl);
@@ -516,6 +525,9 @@
                 const text = String(response);
 
                 if (text.startsWith(msg.success)) {
+                    // Set cookie with user email (learning: never store password in cookie!)
+                    setUserCookie($("#email").val());
+
                     message
                         .removeClass("error")
                         .addClass("success")
@@ -523,6 +535,11 @@
                         .show();
 
                     form.reset();
+
+                    // Redirect to main page after short delay
+                    setTimeout(function() {
+                        window.location.href = "/";
+                    }, 1500);
                 } else {
                     message
                         .removeClass("success")
