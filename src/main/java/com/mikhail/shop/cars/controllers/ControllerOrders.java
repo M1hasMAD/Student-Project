@@ -1,5 +1,6 @@
 package com.mikhail.shop.cars.controllers;
 
+import com.mikhail.shop.cars.enums.Orders;
 import com.mikhail.shop.cars.interfaces.ServiceOrder;
 import com.mikhail.shop.cars.model.Order;
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -37,6 +39,20 @@ public class ControllerOrders {
         }
 
         model.addAttribute("order", orderOptional.get());
+        model.addAttribute("statuses", Orders.values());
         return "admin/order_details";
+    }
+
+    @PostMapping("/updateOrderStatus")
+    public String updateOrderStatus(@RequestParam("id") long id,
+                                     @RequestParam("status") String status,
+                                     Model model) {
+        try {
+            serviceOrder.updateOrderStatus(id, status);
+            log.info("Order {} status updated to {}", id, status);
+        } catch (Exception e) {
+            log.error("Error updating order {} status to {}", id, status, e);
+        }
+        return "redirect:/admin/orderDetails?id=" + id;
     }
 }

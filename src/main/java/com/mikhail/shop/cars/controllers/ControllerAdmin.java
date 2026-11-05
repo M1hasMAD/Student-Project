@@ -1,5 +1,6 @@
 package com.mikhail.shop.cars.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,5 +23,11 @@ public class ControllerAdmin {
     @GetMapping("/admin/startAdmin")
     public String startAdmin() {
         return "admin/start_admin";
+    }
+
+    @GetMapping("/logoutAdmin")
+    public String logoutAdmin(HttpServletRequest request) {
+        request.getSession().invalidate();
+        return "redirect:/loginAdmin";
     }
 }

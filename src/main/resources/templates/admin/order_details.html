@@ -39,6 +39,18 @@
                         <span class="badge" th:classappend="${order.status == 'COMPLETED' ? ' badge-success' : (order.status == 'IN_PROGRESS' ? ' badge-primary' : ' badge-accent')}" th:text="${order.status}"></span>
                     </dd>
                 </dl>
+
+                <!-- Change Status Form -->
+                <form th:action="@{/admin/updateOrderStatus}" method="post" class="status-change-form" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border);">
+                    <input type="hidden" name="id" th:value="${order.id}">
+                    <div class="flex flex-wrap gap-sm items-end">
+                        <label for="status" class="form-label" th:text="#{admin.order_details.change_status}">Change Status</label>
+                        <select id="status" name="status" class="form-select" style="min-width: 200px;">
+                            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}" th:selected="${s == order.status}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" th:text="#{admin.order_details.update}">Update</button>
+                    </div>
+                </form>
             </div>
         </div>
 
