@@ -100,7 +100,7 @@
             <a href="#" id="orders" class="nav-link" th:text="#{nav.orders}">My Orders</a>
             <a href="#" id="my_data" class="nav-link" th:text="#{nav.account}">My Account</a>
             <a href="#" id="logout" class="nav-link" th:text="#{nav.logout}">Sign Out</a>
-            <a href="/admin/startAdmin" class="nav-link nav-link--admin" th:text="#{nav.admin}">Administration</a>
+            <a href="/admin/startAdmin" id="admin-link" class="nav-link nav-link--admin" th:text="#{nav.admin}" style="display: none;">Administration</a>
         </nav>
 
         <!-- Language Switcher -->
@@ -181,6 +181,7 @@
     let templateCars;
     let templateCarDetails;
     let templateCart;
+    let templateOrders;
 
     // Load Mustache templates
     $.get("plantillas_html/home.html")
@@ -202,6 +203,11 @@
     $.get("plantillas_html/cart.html")
         .done(function(response) {
             templateCart = response;
+        });
+
+    $.get("plantillas_html/orders.html")
+        .done(function(response) {
+            templateOrders = response;
         });
 
     function showHome() {
@@ -358,12 +364,7 @@
 
     $("#orders").click(function (event) {
         event.preventDefault();
-        // Check if user is logged in before showing orders
-        if (isUserLoggedIn()) {
-            alert("Orders functionality is not available yet.");
-        } else {
-            showLogin();
-        }
+        showOrders();
     });
 
 
@@ -408,20 +409,45 @@
     }
 
     // Update UI based on authentication state
-    function updateAuthUI() {
+    async function updateAuthUI() {
         const loggedIn = isUserLoggedIn();
         const userEmail = getUserCookie();
 
         if (loggedIn) {
-            // User is logged in - show logout, account, hide login/register
-            $("#login").hide();
-            $("#register").hide();
-            $("#logout").show();
-            $("#my_data").show();
-            $("#orders").show();
-            // Update logout link to show user email
-            const logoutText = (window.messages.nav?.logout || 'Sign Out') + ' (' + userEmail + ')';
-            $("#logout").text(logoutText);
+            // User is logged in - fetch user details including role
+            try {
+                const response = await fetch('/api/users/current');
+                const user = await response.json();
+
+                if (user.authenticated) {
+                    // User is logged in - show logout, account, hide login/register
+                    $("#login").hide();
+                    $("#register").hide();
+                    $("#logout").show();
+                    $("#my_data").show();
+                    $("#orders").show();
+                    // Update logout link to show user email
+                    const logoutText = (window.messages.nav?.logout || 'Sign Out') + ' (' + userEmail + ')';
+                    $("#logout").text(logoutText);
+
+                    // Show admin link only for ADMIN role
+                    if (user.role === 'ADMIN') {
+                        $("#admin-link").show();
+                    } else {
+                        $("#admin-link").hide();
+                    }
+                } else {
+                    // Session expired but cookie exists
+                    clearUserCookie();
+                    updateAuthUI();
+                    return;
+                }
+            } catch (error) {
+                console.error('Failed to fetch user:', error);
+                clearUserCookie();
+                updateAuthUI();
+                return;
+            }
         } else {
             // User is not logged in - show login/register, hide logout/account
             $("#login").show();
@@ -429,6 +455,7 @@
             $("#logout").hide();
             $("#my_data").hide();
             $("#orders").hide();
+            $("#admin-link").hide();
         }
     }
 
@@ -496,6 +523,34 @@
             .fail(function () {
                 $("#contenedor").html(
                     "<p>Could not load account information.</p>"
+                );
+            });
+    }
+
+    // Show user orders page (requires authentication)
+    function showOrders() {
+        if (!isUserLoggedIn()) {
+            showLogin();
+            return;
+        }
+
+        $.getJSON("/api/users/orders")
+            .done(function (response) {
+                if (!response.authenticated) {
+                    clearUserCookie();
+                    updateAuthUI();
+                    showLogin();
+                    return;
+                }
+
+                const html = Mustache.render(templateOrders, response);
+                $("#contenedor").html(html);
+                $("#cars-toolbar").hide();
+                $("#cars-pagination").hide();
+            })
+            .fail(function () {
+                $("#contenedor").html(
+                    "<p>Could not load orders.</p>"
                 );
             });
     }
@@ -569,22 +624,91 @@ function updateCartQuantity(id) {
     $.post("/api/cart/updateQuantity", {
         id: id,
         quantity: quantity
-    }).done(function() {
-        showCart();
+    }).done(function(cart) {
+        if (cart.error) {
+            alert(cart.error);
+            // Reset input to previous value by reloading cart
+            showCart();
+        } else {
+            // Update UI without full reload
+            updateCartUI(cart);
+        }
     }).fail(function() {
         alert("Could not update the quantity.");
+        showCart();
     });
+}
+
+function changeQuantity(id, delta) {
+    const input = document.getElementById("cartQuantity-" + id);
+    let quantity = Number(input.value) + delta;
+    if (quantity < 1) quantity = 1;
+    input.value = quantity;
+    updateCartQuantity(id);
+}
+
+// Debounced auto-update on input change
+let quantityUpdateTimer = null;
+function onQuantityInputChange(id) {
+    clearTimeout(quantityUpdateTimer);
+    quantityUpdateTimer = setTimeout(() => {
+        updateCartQuantity(id);
+    }, 500);
 }
 
 function removeFromCart(id) {
     $.post("/api/cart/removeProduct", {
         id: id
-    }).done(function() {
-        showCart();
+    }).done(function(cart) {
+        if (cart.error) {
+            alert(cart.error);
+        } else {
+            updateCartUI(cart);
+        }
     }).fail(function() {
         alert("Could not remove the product.");
+        showCart();
     });
 }
+
+function updateCartUI(cart) {
+    // Update totals
+    $("#totalQuantity").text(cart.totalQuantity);
+    $("#cartTotal").text("€" + cart.total.toFixed(2));
+
+    // Update each product's subtotal and quantity
+    if (cart.products && Array.isArray(cart.products)) {
+        cart.products.forEach(product => {
+            const itemEl = $(`.cart-item[data-car-id="${product.id}"]`);
+            if (itemEl.length) {
+                itemEl.find(".subtotal-value").text("€" + product.subtotal.toFixed(2));
+                itemEl.find(".qty-input").val(product.quantity);
+            }
+        });
+    }
+
+    // Update cart count in header
+    updateCartCount();
+
+    // If cart is now empty, reload to show empty state
+    if (cart.empty) {
+        showCart();
+    }
+}
+
+// Event delegation for cart quantity controls
+$(document).on("click", ".qty-btn", function() {
+    const $btn = $(this);
+    const carId = $btn.data("car-id");
+    const action = $btn.data("action");
+    const delta = action === "increase" ? 1 : -1;
+    changeQuantity(carId, delta);
+});
+
+$(document).on("change", ".qty-input", function() {
+    const carId = $(this).data("car-id");
+    onQuantityInputChange(carId);
+});
 
 
 function showLogin() {

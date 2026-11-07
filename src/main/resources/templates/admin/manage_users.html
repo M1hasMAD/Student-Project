@@ -19,12 +19,23 @@
         <a th:href="@{/admin/registerUser}" class="btn btn-primary" th:text="#{admin.manage_users.add_user}">+ Add User</a>
     </div>
 
+    <!-- Search and Pagination Info -->
     <div class="card" style="margin-bottom: 24px;">
-        <div class="card-body flex flex-between gap-md">
-            <div>
+        <div class="card-body flex flex-between gap-md flex-wrap">
+            <div class="flex flex-wrap gap-sm items-center">
                 <span class="badge badge-primary" th:text="#{admin.manage_users.total_users}">Total Users</span>
-                <strong style="font-size: 28px; margin-left: 12px;" th:text="${#lists.size(users)}">0</strong>
+                <strong style="font-size: 28px; margin-left: 12px;" th:text="${totalElements}">0</strong>
             </div>
+            <form th:action="@{/admin/manageUsers}" method="get" class="flex flex-wrap gap-sm items-center" style="margin-top: 8px;">
+                <input type="hidden" name="page" value="0">
+                <input type="hidden" name="sort" th:value="${sort}">
+                <input type="hidden" name="dir" th:value="${dir}">
+                <label for="search" class="form-label" style="margin: 0;">#{admin.manage_users.search}</label>
+                <input type="search" id="search" name="search" class="form-input" placeholder="#{admin.manage_users.search_placeholder}"
+                       th:value="${search}" style="min-width: 200px;">
+                <button type="submit" class="btn btn-secondary" th:text="#{admin.common.search}">Search</button>
+                <a th:if="${search}" th:href="@{/admin/manageUsers(sort=${sort}, dir=${dir})}" class="btn btn-ghost" th:text="#{admin.common.clear}">Clear</a>
+            </form>
         </div>
     </div>
 
@@ -38,11 +49,32 @@
                 <table class="category-table">
                     <thead>
                     <tr>
-                        <th class="category-id-column" th:text="#{admin.common.id}">ID</th>
-                        <th th:text="#{admin.manage_users.email}">Email</th>
-                        <th th:text="#{admin.manage_users.first_name}">First Name</th>
-                        <th th:text="#{admin.manage_users.last_name}">Last Name</th>
-                        <th th:text="#{admin.manage_users.phone}">Phone</th>
+                        <th class="category-id-column">
+                            <a th:href="@{/admin/manageUsers(page=0, size=${pageSize}, search=${search}, sort='id', dir=${sort == 'id' and dir == 'asc' ? 'desc' : 'asc'})}"
+                               class="sortable" th:text="#{admin.common.id}">ID</a>
+                            <span th:if="${sort == 'id'}" class="sort-icon" th:classappend="${dir == 'asc' ? ' asc' : ' desc'}"></span>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/manageUsers(page=0, size=${pageSize}, search=${search}, sort='email', dir=${sort == 'email' and dir == 'asc' ? 'desc' : 'asc'})}"
+                               class="sortable" th:text="#{admin.manage_users.email}">Email</a>
+                            <span th:if="${sort == 'email'}" class="sort-icon" th:classappend="${dir == 'asc' ? ' asc' : ' desc'}"></span>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/manageUsers(page=0, size=${pageSize}, search=${search}, sort='firstName', dir=${sort == 'firstName' and dir == 'asc' ? 'desc' : 'asc'})}"
+                               class="sortable" th:text="#{admin.manage_users.first_name}">First Name</a>
+                            <span th:if="${sort == 'firstName'}" class="sort-icon" th:classappend="${dir == 'asc' ? ' asc' : ' desc'}"></span>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/manageUsers(page=0, size=${pageSize}, search=${search}, sort='lastName', dir=${sort == 'lastName' and dir == 'asc' ? 'desc' : 'asc'})}"
+                               class="sortable" th:text="#{admin.manage_users.last_name}">Last Name</a>
+                            <span th:if="${sort == 'lastName'}" class="sort-icon" th:classappend="${dir == 'asc' ? ' asc' : ' desc'}"></span>
+                        </th>
+                        <th>
+                            <a th:href="@{/admin/manageUsers(page=0, size=${pageSize}, search=${search}, sort='phone', dir=${sort == 'phone' and dir == 'asc' ? 'desc' : 'asc'})}"
+                               class="sortable" th:text="#{admin.manage_users.phone}">Phone</a>
+                            <span th:if="${sort == 'phone'}" class="sort-icon" th:classappend="${dir == 'asc' ? ' asc' : ' desc'}"></span>
+                        </th>
+                        <th th:text="#{admin.manage_users.role}">Role</th>
                         <th class="category-actions-column" th:text="#{admin.common.actions}">Actions</th>
                     </tr>
                     </thead>
@@ -58,9 +90,17 @@
                         <td th:text="${user.lastName}"></td>
                         <td th:text="${user.phone}"></td>
                         <td>
+                            <span class="badge" th:classappend="${user.role == 'ADMIN' ? ' badge-primary' : ' badge-accent'}" th:text="${user.role}"></span>
+                        </td>
+                        <td>
                             <div class="category-row-actions">
+                                <a th:href="@{/admin/userDetails(id=${user.id})}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" th:text="#{admin.manage_users.view_details}">View Details</a>
                                 <a th:href="@{/admin/editUser(id=${user.id})}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" th:text="#{admin.common.edit}">Edit</a>
-                                <a th:href="@{/admin/deleteUser(id=${user.id})}" class="btn btn-ghost" style="padding: 6px 12px; font-size: 12px; color: var(--color-error);" onclick="return confirm('#{admin.common.confirm_delete}')" th:text="#{admin.common.delete}">Delete</a>
+                                <form th:action="@{/admin/deleteUser}" method="post" style="display: inline;">
+                                    <input type="hidden" name="id" th:value="${user.id}">
+                                    <button type="submit" class="btn btn-ghost" style="padding: 6px 12px; font-size: 12px; color: var(--color-error);"
+                                            onclick="return confirm('#{admin.common.confirm_delete}')" th:text="#{admin.common.delete}">Delete</button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -73,6 +113,56 @@
             <p class="text-muted" style="margin: 0 0 24px;" th:text="#{admin.manage_users.create_first}">Create your first user to get started.</p>
             <a th:href="@{/admin/registerUser}" class="btn btn-primary" th:text="#{admin.manage_users.create_user}">+ Create User</a>
         </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-wrapper" th:if="${totalPages > 1}">
+        <nav class="pagination" aria-label="User pagination">
+            <ul class="pagination-list">
+                <!-- First page -->
+                <li>
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/admin/manageUsers(page=0, size=${pageSize}, search=${search}, sort=${sort}, dir=${dir})}"
+                       class="pagination-link" aria-label="#{admin.common.first}">««</a>
+                    <span th:if="${currentPage == 0}" class="pagination-link disabled" aria-disabled="true">««</span>
+                </li>
+
+                <!-- Previous page -->
+                <li>
+                    <a th:if="${currentPage > 0}"
+                       th:href="@{/admin/manageUsers(page=${currentPage - 1}, size=${pageSize}, search=${search}, sort=${sort}, dir=${dir})}"
+                       class="pagination-link" aria-label="#{admin.common.previous}">«</a>
+                    <span th:if="${currentPage == 0}" class="pagination-link disabled" aria-disabled="true">«</span>
+                </li>
+
+                <!-- Page numbers -->
+                <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a th:if="${i != currentPage}"
+                       th:href="@{/admin/manageUsers(page=${i}, size=${pageSize}, search=${search}, sort=${sort}, dir=${dir})}"
+                       class="pagination-link" th:text="${i + 1}">1</a>
+                    <span th:if="${i == currentPage}" class="pagination-link active" th:text="${i + 1}" aria-current="page">1</span>
+                </li>
+
+                <!-- Next page -->
+                <li>
+                    <a th:if="${currentPage < totalPages - 1}"
+                       th:href="@{/admin/manageUsers(page=${currentPage + 1}, size=${pageSize}, search=${search}, sort=${sort}, dir=${dir})}"
+                       class="pagination-link" aria-label="#{admin.common.next}">»</a>
+                    <span th:if="${currentPage >= totalPages - 1}" class="pagination-link disabled" aria-disabled="true">»</span>
+                </li>
+
+                <!-- Last page -->
+                <li>
+                    <a th:if="${currentPage < totalPages - 1}"
+                       th:href="@{/admin/manageUsers(page=${totalPages - 1}, size=${pageSize}, search=${search}, sort=${sort}, dir=${dir})}"
+                       class="pagination-link" aria-label="#{admin.common.last}">»»</a>
+                    <span th:if="${currentPage >= totalPages - 1}" class="pagination-link disabled" aria-disabled="true">»»</span>
+                </li>
+            </ul>
+            <div class="pagination-info">
+                <span th:text="#{pagination.page_info(${currentPage + 1}, ${totalPages}, ${totalElements})}">Page 1 of 10 (100 items)</span>
+            </div>
+        </nav>
     </div>
 </main>
 

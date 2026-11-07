@@ -92,7 +92,7 @@ public class CartREST {
     }
 
     @PostMapping("/removeProduct")
-    public String removeProduct(
+    public Map<String, Object> removeProduct(
             @RequestParam("id") long id,
             HttpServletRequest request) {
 
@@ -100,15 +100,15 @@ public class CartREST {
                 .getAttribute("user_identified");
 
         if (user == null) {
-            return "Please sign in first.";
+            return Map.of("error", "Please sign in first.");
         }
 
         cartService.removeProduct(user.getId(), id);
-        return "Product removed from cart.";
+        return getProducts(request);
     }
 
     @PostMapping("/updateQuantity")
-    public String updateQuantity(
+    public Map<String, Object> updateQuantity(
             @RequestParam("id") long id,
             @RequestParam("quantity") int quantity,
             HttpServletRequest request) {
@@ -117,14 +117,14 @@ public class CartREST {
                 .getAttribute("user_identified");
 
         if (user == null) {
-            return "Please sign in first.";
+            return Map.of("error", "Please sign in first.");
         }
 
         try {
             cartService.updateQuantity(user.getId(), id, quantity);
-            return "Product quantity updated.";
+            return getProducts(request);
         } catch (IllegalArgumentException e) {
-            return e.getMessage();
+            return Map.of("error", e.getMessage());
         }
     }
 }

@@ -26,4 +26,6 @@ public interface ServiceOrder {
     OrderSummary getOrderSummary(long userId);
 
     void confirmOrder(long userId);
+
+    List<Order> getUserOrders(long userId);
 }

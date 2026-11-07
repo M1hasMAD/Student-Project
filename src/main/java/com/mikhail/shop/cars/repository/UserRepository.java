@@ -1,6 +1,8 @@
 package com.mikhail.shop.cars.repository;
 
 import com.mikhail.shop.cars.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailIgnoreCase(String email);
 
     Optional<User> findByEmailIgnoreCaseAndPass(String email, String pass);
+
+    Page<User> findAll(Pageable pageable);
+
+    Page<User> findByEmailContainingIgnoreCase(String email, Pageable pageable);
 }

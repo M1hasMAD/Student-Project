@@ -59,6 +59,12 @@ public class ServiceOrderImplJPA implements ServiceOrder {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Order> getUserOrders(long userId) {
+        return orderRepository.findByUserIdOrderByIdDesc(userId);
+    }
+
+    @Override
     public void updateOrderStatus(long id, String status) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));

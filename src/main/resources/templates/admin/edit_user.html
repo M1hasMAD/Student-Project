@@ -22,7 +22,7 @@
     <div class="card" style="max-width: 600px;">
         <div class="card-header">
             <h2 th:text="#{admin.edit_user.title_label}">User Information</h2>
-            <p class="text-muted" th:text="#{admin.edit_user.subtitle}">Update the fields and save your changes.</p>
+            <p class="text-muted" th:text="#{admin.edit_user.subtitle}">Update the fields and save your changes. Leave password blank to keep current password.</p>
         </div>
         <div class="card-body">
             <form th:action="@{/admin/saveChangesOfUser}"
@@ -39,10 +39,12 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="pass">Password</label>
+                    <label for="pass" th:text="#{admin.edit_user.password_label}">Password</label>
                     <input type="password" id="pass"
                            th:field="*{pass}"
-                           placeholder="Enter password" required>
+                           placeholder="#{admin.edit_user.password_placeholder}"
+                           autocomplete="new-password">
+                    <small class="form-hint" th:text="#{admin.edit_user.password_hint}">Leave blank to keep current password.</small>
                 </div>
 
                 <div class="form-field">
@@ -61,6 +63,13 @@
                     <label for="phone" th:text="#{admin.edit_user.phone_label}">Phone</label>
                     <input type="tel" id="phone"
                            th:field="*{phone}" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="role" th:text="#{admin.edit_user.role_label}">Role</label>
+                    <select id="role" th:field="*{role}" class="form-select">
+                        <option th:each="r : ${roles}" th:value="${r}" th:text="${r}" th:selected="${r == userToEdit.role}"></option>
+                    </select>
                 </div>
 
                 <div class="form-actions flex flex-between gap-md" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-border);">

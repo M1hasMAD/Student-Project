@@ -12,28 +12,25 @@
 
     {{^empty}}
     {{#products}}
-    <div class="cart-item">
+    <div class="cart-item" data-car-id="{{id}}">
         <img src="{{imageUrl}}" alt="{{title}}" class="cart-item-image">
 
         <div class="cart-item-details">
             <h3 class="cart-item-title">{{title}}</h3>
             <p class="cart-item-price"><span data-i18n="cart.price">Price:</span> €{{price}}</p>
-            <p class="cart-item-subtotal"><span data-i18n="cart.subtotal">Subtotal:</span> €{{subtotal}}</p>
+            <p class="cart-item-subtotal"><span data-i18n="cart.subtotal">Subtotal:</span> <span class="subtotal-value">€{{subtotal}}</span></p>
         </div>
 
         <div class="cart-item-actions">
-            <label for="cartQuantity-{{id}}" data-i18n="cart.quantity">Quantity:</label>
-            <input id="cartQuantity-{{id}}" type="number"
-                   min="1" value="{{quantity}}"
-                   style="width: 70px; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 14px; text-align: center;">
-
-            <button type="button"
-                    class="btn btn-secondary"
-                    onclick="updateCartQuantity({{id}})"
-                    style="padding: 8px 16px;"
-                    data-i18n="cart.update">
-                Update
-            </button>
+            <label for="cartQuantity-{{id}}" class="visually-hidden" data-i18n="cart.quantity">Quantity:</label>
+            <div class="quantity-control">
+                <button type="button" class="btn btn-secondary qty-btn" data-action="decrease" data-car-id="{{id}}" aria-label="Decrease quantity">−</button>
+                <input id="cartQuantity-{{id}}" type="number" class="qty-input"
+                       min="1" value="{{quantity}}"
+                       data-car-id="{{id}}"
+                       style="width: 70px; padding: 8px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 14px; text-align: center;">
+                <button type="button" class="btn btn-secondary qty-btn" data-action="increase" data-car-id="{{id}}" aria-label="Increase quantity">+</button>
+            </div>
 
             <button type="button"
                     class="btn btn-ghost"
@@ -48,8 +45,8 @@
 
     <div class="cart-summary">
         <div class="cart-summary-totals">
-            <span class="cart-summary-label"><span data-i18n="cart.total_quantity">Total quantity:</span> <strong>{{totalQuantity}}</strong></span>
-            <span class="cart-summary-total"><span data-i18n="cart.total">Total:</span> €{{total}}</span>
+            <span class="cart-summary-label"><span data-i18n="cart.total_quantity">Total quantity:</span> <strong id="totalQuantity">{{totalQuantity}}</strong></span>
+            <span class="cart-summary-total"><span data-i18n="cart.total">Total:</span> <span id="cartTotal">€{{total}}</span></span>
         </div>
         <div class="cart-actions">
             <button type="button"

@@ -1,6 +1,7 @@
 package com.mikhail.shop.cars.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +27,9 @@ public class Order {
 
     @Column(nullable = false)
     private String status;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private String fullName;
     private String address;
@@ -150,10 +154,24 @@ public class Order {
         this.billingAddress = billingAddress;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Transient
     public double getTotalAmount() {
         return orderItems.stream()
                 .mapToDouble(item -> item.getCar().getPrice() * item.getQuantity())
                 .sum();
+    }
+
+    @Transient
+    public String getFormattedDate() {
+        if (createdAt == null) return "";
+        return createdAt.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
     }
 }
