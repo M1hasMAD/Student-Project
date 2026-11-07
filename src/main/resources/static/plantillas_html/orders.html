@@ -1,0 +1,62 @@
+<div class="orders-container">
+    <div class="cart-header">
+        <h1>My Orders</h1>
+    </div>
+
+    {{#orders}}
+    <div class="orders-list">
+        {{#.}}
+        <div class="order-card card">
+            <div class="order-card-header">
+                <div class="order-info">
+                    <h3>Order #{{id}}</h3>
+                    <span class="order-date">{{formattedDate}}</span>
+                </div>
+                <span class="order-status status-{{status.toLowerCase()}}">{{status}}</span>
+            </div>
+
+            <div class="order-card-body">
+                <div class="order-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Delivery:</span>
+                        <span class="detail-value">{{deliveryMethod}}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Total:</span>
+                        <span class="detail-value total">€{{totalAmount}}</span>
+                    </div>
+                </div>
+
+                <div class="order-items">
+                    <h4>Items:</h4>
+                    {{#orderItems}}
+                    <div class="order-item">
+                        <span class="item-name">{{car.title}}</span>
+                        <span class="item-qty">× {{quantity}}</span>
+                        <span class="item-price">€{{car.price}}</span>
+                    </div>
+                    {{/orderItems}}
+                </div>
+            </div>
+
+            <div class="order-card-footer">
+                <button type="button"
+                        class="btn btn-secondary"
+                        onclick="showOrderDetails({{id}})">
+                    View Details
+                </button>
+            </div>
+        </div>
+        {{/.}}
+    </div>
+    {{/orders}}
+
+    {{^orders}}
+    <div class="card text-center" style="padding: 60px 20px;">
+        <p style="font-size: 20px; color: var(--color-text-muted); margin: 0 0 24px;">You haven't placed any orders yet.</p>
+        <a href="#" onclick="showCars(); return false;" class="btn btn-primary">← Continue Shopping</a>
+    </div>
+    {{/orders}}
+
+    <p id="ordersMessage" role="status" class="text-center text-muted" style="margin-top: 16px;"></p>
+</div>

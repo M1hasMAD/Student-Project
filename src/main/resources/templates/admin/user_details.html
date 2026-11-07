@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{admin.user_details.title} + ' | ' + #{app.name}">User Details</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<div th:insert="fragments/general.html :: admin-header"></div>
+
+<main class="container section">
+    <div class="page-header flex flex-between gap-md">
+        <div>
+            <h1 class="section-title" th:text="#{admin.user_details.title}">User Details</h1>
+            <p class="section-subtitle">View complete user information.</p>
+        </div>
+        <a th:href="@{/admin/manageUsers}" class="btn btn-secondary" th:text="#{admin.user_details.back_to_users}">← Back to Users</a>
+    </div>
+
+    <div class="grid grid-2 gap-lg" th:if="${user != null}">
+        <!-- User Information -->
+        <div class="card">
+            <div class="card-header flex flex-between gap-md">
+                <h2 th:text="#{admin.user_details.user_info}">User Information</h2>
+                <span class="badge" th:classappend="${user.role == 'ADMIN' ? ' badge-primary' : ' badge-accent'}" th:text="${user.role}"></span>
+            </div>
+            <div class="card-body">
+                <dl class="summary-list">
+                    <dt th:text="#{admin.common.id}">ID</dt>
+                    <dd th:text="${user.id}"></dd>
+
+                    <dt th:text="#{admin.manage_users.email}">Email</dt>
+                    <dd th:text="${user.email}"></dd>
+
+                    <dt th:text="#{admin.manage_users.first_name}">First Name</dt>
+                    <dd th:text="${user.firstName}"></dd>
+
+                    <dt th:text="#{admin.manage_users.last_name}">Last Name</dt>
+                    <dd th:text="${user.lastName}"></dd>
+
+                    <dt th:text="#{admin.manage_users.phone}">Phone</dt>
+                    <dd th:text="${user.phone}"></dd>
+
+                    <dt th:text="#{admin.user_details.role}">Role</dt>
+                    <dd>
+                        <span class="badge" th:classappend="${user.role == 'ADMIN' ? ' badge-primary' : ' badge-accent'}" th:text="${user.role}"></span>
+                    </dd>
+                </dl>
+
+                <!-- Change Role Form -->
+                <form th:action="@{/admin/changeUserRole}" method="post" class="role-change-form" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border);">
+                    <input type="hidden" name="id" th:value="${user.id}">
+                    <div class="flex flex-wrap gap-sm items-end">
+                        <label for="role" class="form-label" th:text="#{admin.user_details.change_role}">Change Role</label>
+                        <select id="role" name="role" class="form-select" style="min-width: 200px;">
+                            <option th:each="r : ${roles}" th:value="${r}" th:text="${r}" th:selected="${r == user.role}"></option>
+                        </select>
+                        <button type="submit" class="btn btn-primary" th:text="#{admin.user_details.update}">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- User Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h2 th:text="#{admin.user_details.actions}">Actions</h2>
+            </div>
+            <div class="card-body">
+                <div class="flex flex-wrap gap-sm" style="margin-bottom: 16px;">
+                    <a th:href="@{/admin/editUser(id=${user.id})}" class="btn btn-secondary" th:text="#{admin.common.edit}">Edit</a>
+                </div>
+
+                <form th:action="@{/admin/deleteUser}" method="post" onsubmit="return confirm('#{admin.user_details.confirm_delete}')">
+                    <input type="hidden" name="id" th:value="${user.id}">
+                    <button type="submit" class="btn btn-ghost" style="color: var(--color-error);" th:text="#{admin.common.delete}">Delete User</button>
+                </form>
+
+                <p class="text-muted" style="font-size: 13px; margin-top: 16px;" th:text="#{admin.user_details.delete_warning}">Warning: This action cannot be undone. All associated data will be removed.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card text-center" th:if="${user == null}" style="padding: 48px 24px;">
+        <p style="margin: 0;">User not found.</p>
+        <a th:href="@{/admin/manageUsers}" class="btn btn-primary" style="margin-top: 16px;" th:text="#{admin.user_details.back_to_users}">← Back to Users</a>
+    </div>
+</main>
+
+<footer class="site-footer" role="contentinfo">
+    <div class="container">
+        <p th:text="#{footer.copyright}">&copy; 2025 Car Store. All rights reserved.</p>
+    </div>
+</footer>
+
+<div th:insert="fragments/general.html :: language-script"></div>
+
+</body>
+</html>
