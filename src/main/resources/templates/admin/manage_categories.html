@@ -34,6 +34,12 @@
         </div>
     </div>
 
+    <div class="card" th:if="${success}" style="margin-bottom: 24px; border-color: var(--color-success);">
+        <div class="card-body" style="background-color: #f0fdf4;">
+            <p class="text-success" style="margin: 0;" th:text="${success}"></p>
+        </div>
+    </div>
+
     <div class="card">
         <div class="card-header">
             <h2 th:text="#{admin.manage_categories.all_categories}">All Categories</h2>
@@ -63,8 +69,16 @@
                         </td>
                         <td>
                             <div class="category-row-actions">
-                                <a th:href="@{/admin/editCategory(id=${category.id})}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" th:text="#{admin.common.edit}">Edit</a>
-                                <a th:href="@{/admin/deleteCategory(id=${category.id})}" class="btn btn-ghost" style="padding: 6px 12px; font-size: 12px; color: var(--color-error);" onclick="return confirm('#{admin.common.confirm_delete}')" th:text="#{admin.common.delete}">Delete</a>
+                                <a th:href="@{/admin/editCategory(id=${category.id})}"
+                                   class="btn btn-secondary"
+                                   style="padding: 6px 12px; font-size: 12px;"
+                                   th:text="#{admin.common.edit}">Edit</a>
+                                <a th:href="@{/admin/deleteCategory(id=${category.id})}"
+                                   class="btn btn-ghost"
+                                   style="padding: 6px 12px; font-size: 12px; color: var(--color-error);"
+                                   th:attr="data-confirm=#{admin.common.confirm_delete}"
+                                   onclick="return confirm(this.getAttribute('data-confirm'))"
+                                   th:text="#{admin.common.delete}">Delete</a>
                             </div>
                         </td>
                     </tr>

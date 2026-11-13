@@ -36,6 +36,14 @@ public interface ServiceCars {
 
     List<Category> getCategories();
 
+    Optional<Category> getCategoryById(Long id);
+
+    void createCategory(Category category);
+
+    void updateCategory(Category category);
+
+    void deleteCategory(Long id);
+
     List<CarImage> getImagesByCarId(Long carId);
 
     Optional<CarImage> getImageById(Long imageId);

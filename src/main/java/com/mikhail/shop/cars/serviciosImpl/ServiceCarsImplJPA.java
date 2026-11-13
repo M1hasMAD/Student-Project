@@ -2,6 +2,8 @@ package com.mikhail.shop.cars.serviciosImpl;
 
 import com.mikhail.shop.cars.exception.CarNotFoundException;
 import com.mikhail.shop.cars.exception.BusinessException;
+import com.mikhail.shop.cars.exception.CategoryNotFoundException;
+import com.mikhail.shop.cars.exception.DuplicateCategoryException;
 import com.mikhail.shop.cars.interfaces.ServiceCars;
 import com.mikhail.shop.cars.model.Car;
 import com.mikhail.shop.cars.model.CarImage;
@@ -254,6 +256,53 @@ public class ServiceCarsImplJPA implements ServiceCars {
     @Transactional(readOnly = true)
     public List<Category> getCategories() {
         return categoryRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Category> getCategoryById(Long id) {
+        return categoryRepository.findById(id);
+    }
+
+    @Override
+    public void createCategory(Category category) {
+        if (categoryRepository.existsByNameIgnoreCase(category.getName())) {
+            throw new DuplicateCategoryException(category.getName());
+        }
+        categoryRepository.save(category);
+    }
+
+    @Override
+    public void updateCategory(Category category) {
+        Category existing = categoryRepository.findById(category.getId())
+                .orElseThrow(() -> new CategoryNotFoundException(category.getId()));
+
+        // Check for duplicate name (excluding current category)
+        Optional<Category> duplicate = categoryRepository.findByNameIgnoreCase(category.getName());
+        if (duplicate.isPresent() && duplicate.get().getId() != category.getId()) {
+            throw new DuplicateCategoryException(category.getName());
+        }
+
+        existing.setName(category.getName());
+        existing.setDescription(category.getDescription());
+        categoryRepository.save(existing);
+    }
+
+    @Override
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
+
+        // Check if category has associated cars
+        if (!category.getCars().isEmpty()) {
+            // Set category to null for all associated cars
+            for (Car car : category.getCars()) {
+                car.setCategory(null);
+            }
+            carRepository.saveAll(category.getCars());
+        }
+
+        categoryRepository.delete(category);
     }
 
     @Override

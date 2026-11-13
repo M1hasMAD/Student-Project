@@ -11,7 +11,7 @@
 
 <div th:insert="fragments/general.html :: admin-header"></div>
 
-<main class="container section">
+<main class="container section admin-orders-page">
     <div class="page-header flex flex-between gap-md">
         <div>
             <h1 class="section-title" th:text="#{admin.manage_orders.title}">Manage Orders</h1>
@@ -94,7 +94,7 @@
                     <label for="searchOrders" class="visually-hidden" th:text="#{admin.manage_orders.search}">Search orders</label>
                     <input type="search" id="searchOrders" class="search-input" placeholder="Search by ID, customer, or status..." aria-label="Search orders">
                 </div>
-                <select id="statusFilter" class="form-field" style="min-width: 180px; padding: 0;">
+                <select id="statusFilter" class="form-field orders-status-filter" style="min-width: 180px; padding: 0;">
                     <option value="">All Statuses</option>
                     <option value="IN_PROGRESS">In Progress</option>
                     <option value="COMPLETED">Completed</option>

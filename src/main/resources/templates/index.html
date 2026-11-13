@@ -134,15 +134,17 @@
                            id="searchInput"
                            name="search"
                            class="form-input"
-                           placeholder="#{search.placeholder}">
+                           th:placeholder="#{search.placeholder}">
                 </div>
                 <div class="form-field">
                     <label for="pageSizeSelect" class="form-label" th:text="#{search.per_page}">Per page</label>
                     <select id="pageSizeSelect" name="size" class="form-select" onchange="currentPage = 0; showCars();">
-                        <option value="6">6</option>
-                        <option value="12" selected>12</option>
-                        <option value="24">24</option>
-                        <option value="48">48</option>
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
                     </select>
                 </div>
                 <button type="submit" class="btn btn-primary" th:text="#{search.button}">Search</button>
@@ -171,7 +173,7 @@
 <script>
     // State for pagination
     let currentPage = 0;
-    let currentPageSize = 12;
+    let currentPageSize = 10;
     let currentSearch = '';
     let totalPages = 0;
     let totalElements = 0;
