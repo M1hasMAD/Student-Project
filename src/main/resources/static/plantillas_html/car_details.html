@@ -5,32 +5,39 @@
             <img id="mainCarImage"
                  src="{{mainImageUrl}}"
                  alt="{{title}}"
-                 class="car-details-main-image">
+                 class="car-details-main-image"
+                 onerror="this.onerror=null; this.src='{{thumbnailUrl}}';">
 
             {{#images.length}}
             <button type="button"
                     id="previousCarImage"
                     class="btn btn-ghost"
                     style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 44px; height: 44px; padding: 0; border-radius: 50%; background: rgba(26, 42, 58, 0.7); color: white;"
-                    aria-label="Previous image">❮</button>
+                    aria-label="Previous image">❮
+            </button>
 
             <button type="button"
                     id="nextCarImage"
                     class="btn btn-ghost"
                     style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); z-index: 10; width: 44px; height: 44px; padding: 0; border-radius: 50%; background: rgba(26, 42, 58, 0.7); color: white;"
-                    aria-label="Next image">❯</button>
+                    aria-label="Next image">❯
+            </button>
             {{/images.length}}
         </div>
 
         {{#images.length}}
-        <div id="carImageThumbnails" class="car-details-thumbnails" style="margin-top: 16px; display: flex; gap: 12px; justify-content: center; overflow-x: auto; padding-bottom: 8px;">
-            <img src="{{mainImageUrl}}" alt="{{title}} - Main" class="car-details-thumb active" data-index="0" style="width: 100px; height: 75px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid transparent; cursor: pointer; flex-shrink: 0; transition: border-color var(--transition-fast);">
+        <div id="carImageThumbnails" class="car-details-thumbnails"
+             style="margin-top: 16px; display: flex; gap: 12px; justify-content: center; overflow-x: auto; padding-bottom: 8px;">
+            <img src="{{mainImageUrl}}" alt="{{title}} - Main" class="car-details-thumb active" data-index="0"
+                 style="width: 100px; height: 75px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid transparent; cursor: pointer; flex-shrink: 0; transition: border-color var(--transition-fast);">
             {{#images}}
-            <img src="{{url}}" alt="{{title}} - Image {{@index}}" class="car-details-thumb" data-index="{{@index+1}}" style="width: 100px; height: 75px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid transparent; cursor: pointer; flex-shrink: 0; transition: border-color var(--transition-fast);">
+            <img src="{{url}}" alt="{{title}} - Image {{@index}}" class="car-details-thumb" data-index="{{@index+1}}"
+                 style="width: 100px; height: 75px; object-fit: cover; border-radius: var(--radius-md); border: 2px solid transparent; cursor: pointer; flex-shrink: 0; transition: border-color var(--transition-fast);">
             {{/images}}
         </div>
 
-        <div id="carImageCounter" style="text-align: center; margin-top: 12px; color: var(--color-text-muted); font-size: 13px;"></div>
+        <div id="carImageCounter"
+             style="text-align: center; margin-top: 12px; color: var(--color-text-muted); font-size: 13px;"></div>
         {{/images.length}}
     </div>
 
@@ -57,8 +64,13 @@
                     counter.textContent = (currentIndex + 1) + " / " + images.length;
                 }
 
-                previous.disabled = images.length <= 1;
-                next.disabled = images.length <= 1;
+                if (previous) {
+                    previous.disabled = images.length <= 1;
+                }
+
+                if (next) {
+                    next.disabled = images.length <= 1;
+                }
 
                 thumbnails.forEach((thumb, idx) => {
                     thumb.classList.toggle('active', idx === currentIndex);
@@ -122,7 +134,8 @@
             <span>＋</span> Add to Cart
         </button>
 
-        <a href="#" onclick="showCars(); return false;" class="btn btn-secondary" style="padding: 12px 24px; font-size: 15px;" data-i18n="car.back_to_listings">
+        <a href="#" onclick="showCars(); return false;" class="btn btn-secondary"
+           style="padding: 12px 24px; font-size: 15px;" data-i18n="car.back_to_listings">
             ← Back to listings
         </a>
     </div>

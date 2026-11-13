@@ -31,6 +31,7 @@ public class ControllerImage {
         this.serviceCars = serviceCars;
     }
 
+
     @GetMapping("/get_image")
     public void getImage(
             @RequestParam("id") Long id,
@@ -38,12 +39,24 @@ public class ControllerImage {
 
         var carOptional = serviceCars.getCarById(id);
 
-        if (carOptional.isEmpty() || carOptional.get().getCoverImage() == null) {
+        if (carOptional.isEmpty()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        byte[] image = carOptional.get().getCoverImage();
+        Car car = carOptional.get();
+
+        byte[] image = car.getCoverImage();
+
+        if (image == null) {
+            image = car.getThumbnailImage();
+        }
+
+        if (image == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
         response.setContentType(detectContentType(image));
         response.setContentLength(image.length);
         response.getOutputStream().write(image);
